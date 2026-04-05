@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Test Web Component SDF Canvas</title>
+  <script src="components/SDFCanvas.js" type="module"></script>
+  <script src="components/FigureEditor.js" type="module"></script>
+  <style type="text/css" media="all">
+    body {
+      background: rgba(6, 8, 10, 0.9);
+    }
+    #sdf {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="sdf">
+    <sdf-canvas id="sdf-view" width="500" height="500"></sdf-canvas>
+    <sdf-editor id="sdf-editor"></sdf-editor>
+  </div>
+  <script src="main.js" type="module"></script>
+
+</body>
+
+</html>

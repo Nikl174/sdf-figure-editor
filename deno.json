@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "strictNullChecks": true,
+    "lib": ["es2020", "dom"]
+  },
+  "include": ["./*.js"]
+}
