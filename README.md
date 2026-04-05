@@ -1,5 +1,13 @@
 # Ray Marching and Signed Distance Functions (SDFs) with WebGL
 
+## Starting
+
+just use a webserver, e.g.:
+
+```bash
+python -m http.server -b 127.0.0.1 -d . 8000
+```
+
 ## Development notes
 
 - Developed in separate files:
