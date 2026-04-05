@@ -2,7 +2,7 @@ import { computeCameraPosition, rotatedPos } from "./lib/utils.js";
 import { SDFCanvas } from "./components/SDFCanvas.js";
 import { SDFEditor } from "./components/FigureEditor.js";
 import { SDFPart } from "./lib/figure.js";
-import { FigureNode} from "./lib/figureGraph.js"
+// import { FigureNode} from "./lib/figureGraph.js"
 
 /** @import {AnimVars} from "./components/SDFCanvas.js" */
 
