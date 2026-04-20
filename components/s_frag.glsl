@@ -24,7 +24,7 @@ const vec3 n4 =
     vec3(-epsNrm, -epsNrm,
          epsNrm); // They will form a nice thetrahedron around the position
 
-const int NUM_OF_PART = 10;
+const int NUM_OF_PART = 4;
 const int NUM_OF_EXTRA_PARAM = 3;
 
 const int SDF_NONE = -1;
