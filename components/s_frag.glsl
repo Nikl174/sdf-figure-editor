@@ -3,6 +3,7 @@ precision highp float;
 
 uniform vec3 lightPos;
 uniform vec3 camPos;
+uniform int numOfPart;
 
 in vec2 xyCoo; // the current xy-coordinate as calculated based on the vertex
                // shader positions during polygon filling (normalized -1..1)
@@ -24,7 +25,8 @@ const vec3 n4 =
     vec3(-epsNrm, -epsNrm,
          epsNrm); // They will form a nice thetrahedron around the position
 
-const int NUM_OF_PART = 4;
+// TODO how much
+const int MAX_NUM_OF_PART = 24;
 const int NUM_OF_EXTRA_PARAM = 3;
 
 const int SDF_NONE = -1;
@@ -45,7 +47,7 @@ struct FigurePart {
 };
 
 layout(std140) uniform FigurePartBlock {
-  FigurePart parts[NUM_OF_PART];
+  FigurePart parts[MAX_NUM_OF_PART];
 };
 
 // ------------------------------------------------------------
@@ -131,9 +133,9 @@ float calc_sdf_for_figure_part(vec3 point, FigurePart part) {
   }
 }
 
-float dist_to_figure(in vec3 point, FigurePart parts[NUM_OF_PART]) {
+float dist_to_figure(in vec3 point, FigurePart parts[MAX_NUM_OF_PART]) {
 
-  // if (NUM_OF_PART <= 0)
+  // if (MAX_NUM_OF_PART <= 0)
   //   return -1.0;
 
   float distance = 0.0;
@@ -141,12 +143,16 @@ float dist_to_figure(in vec3 point, FigurePart parts[NUM_OF_PART]) {
   distance = calc_sdf_for_figure_part(point, parts[0]);
 
   // if (parts.length() >= 2) {
-    for (int i = 1; i < NUM_OF_PART; i++) {
-      FigurePart part = parts[i];
-      distance = smoothMin(distance, calc_sdf_for_figure_part(point, part),
-                           part.smooth_min);
-    }
-  // }
+  // TODO: check that numOfPart<MAX_NUM_OF_PART
+  for (int i = 1; i < MAX_NUM_OF_PART; i++) {
+    if (i>numOfPart) {
+      break;
+    } 
+
+    FigurePart part = parts[i];
+    distance = smoothMin(distance, calc_sdf_for_figure_part(point, part),
+                         part.smooth_min);
+  }
 
   float p1 = sd_plane(point + vec3(0.5, 0.0, 0), vec3(0, 1, 0), 2.0);
 
