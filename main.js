@@ -86,8 +86,8 @@ function convertFigureListToSDFPart(list) {
 function createHumanFigure() {
   const body = FigureNode.create({
     radius: 1,
-    phi: Math.PI/2,
-    theta: Math.PI/2,
+    phi: Math.PI / 2,
+    theta: Math.PI / 2,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
     smooth_min: 0.1,
@@ -103,44 +103,66 @@ function createHumanFigure() {
     extra_param: [0.4, 0.0, 0.0],
   });
   const arm_left = FigureNode.create({
-    radius: 0.5,
+    radius: 1,
     phi: Math.PI / 2,
     theta: Math.PI,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
     smooth_min: 0.0,
-    extra_param: [0.3, 0.0, 0.0],
+    extra_param: [0.25, 0.0, 0.0],
   });
   const arm_right = FigureNode.create({
-    radius: 0.5,
-    phi: -Math.PI / 2,
-    theta: -Math.PI / 4,
+    radius: 1,
+    phi: Math.PI / 2,
+    theta: 0,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
     smooth_min: 0.0,
-    extra_param: [0.3, 0.0, 0.0],
+    extra_param: [0.25, 0.0, 0.0],
+  });
+  const leg_left = FigureNode.create({
+    radius: 1,
+    phi: Math.PI / 2,
+    theta: 5 * Math.PI / 4,
+  }, {
+    sdf: SDF_PRIMITIES.SDF_CAPSULE,
+    smooth_min: 0.0,
+    extra_param: [0.25, 0.0, 0.0],
+  });
+  const leg_right = FigureNode.create({
+    radius: 1,
+    phi: -Math.PI / 2,
+    theta: Math.PI / 4,
+  }, {
+    sdf: SDF_PRIMITIES.SDF_CAPSULE,
+    smooth_min: 0.0,
+    extra_param: [0.25, 0.0, 0.0],
   });
   const foot_left = FigureNode.create({
-    radius: 0.5,
-    phi: Math.PI / 2,
-    theta: -Math.PI / 4,
+    radius: 0.8,
+    phi: -Math.PI / 2,
+    theta: Math.PI / 2,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
     smooth_min: 0.0,
-    extra_param: [0.3, 0.0, 0.0],
+    extra_param: [0.25, 0.0, 0.0],
   });
   const foot_right = FigureNode.create({
-    radius: 0.5,
+    radius: 0.8,
     phi: -Math.PI / 2,
-    theta: -Math.PI / 4,
+    theta: Math.PI / 2,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
     smooth_min: 0.0,
-    extra_param: [0.3, 0.0, 0.0],
+    extra_param: [0.25, 0.0, 0.0],
   });
-  body.addChild(head, 2.0);
+  body.addChild(head, 1.5);
   body.addChild(arm_right, 1);
   body.addChild(arm_left, 1);
+  body.addChild(leg_right, 0);
+  body.addChild(leg_left, 0);
+  leg_right.addChild(foot_right, 1);
+  leg_left.addChild(foot_left, 1);
 
   return body;
 }
