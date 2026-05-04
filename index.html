@@ -6,14 +6,52 @@
   <title>Test Web Component SDF Canvas</title>
   <script src="components/SDFCanvas.js" type="module"></script>
   <script src="components/FigureEditor.js" type="module"></script>
-  <style type="text/css" media="all">
+
+  <style>
     body {
+      margin: 0;
       background: rgba(6, 8, 10, 0.9);
+      font-family: sans-serif;
     }
+
     #sdf {
       display: flex;
       flex-direction: row;
       align-items: stretch;
+      height: 100vh;
+      width: 100%;
+    }
+
+    sdf-canvas {
+      flex: 1;
+      min-width: 0;
+    }
+
+    sdf-editor {
+      flex: 1;
+      min-width: 0;
+      overflow: auto;
+    }
+
+    /* Make canvas fill its container */
+    #sdf-view {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Responsive: stack on small screens */
+    @media (max-width: 900px) {
+      #sdf {
+        flex-direction: column;
+      }
+
+      sdf-canvas {
+        height: 50vh;
+      }
+
+      sdf-editor {
+        height: 50vh;
+      }
     }
   </style>
 </head>
@@ -21,9 +59,10 @@
 <body>
 
   <div id="sdf">
-    <sdf-canvas id="sdf-view" width="500" height="500"></sdf-canvas>
+    <sdf-canvas id="sdf-view"></sdf-canvas>
     <sdf-editor id="sdf-editor"></sdf-editor>
   </div>
+
   <script src="main.js" type="module"></script>
 
 </body>

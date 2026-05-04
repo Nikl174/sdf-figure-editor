@@ -16,10 +16,11 @@ template.innerHTML = `
       align-items: stretch;
       justify-items: stretch;
       margin: auto;
+      padding: 2he;
     }
     </style>
     <div id="editor">
-      <textarea name="figure_in" id="figure_in" rows="30" cols="50"></textarea>
+      <textarea name="figure_in" id="figure_in" rows="20" cols="30"></textarea>
       <button id="update" type="button">Update figure</button>
     </div>
 `;
