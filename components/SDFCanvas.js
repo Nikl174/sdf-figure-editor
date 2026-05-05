@@ -1,4 +1,5 @@
 import { SDF_PRIMITIES, SDFPart, updateFigureBuffer } from "../lib/figure.js";
+import { vec3 } from "../lib/matrix.js";
 import {
   getVariableLocations,
   initShaderProgram,
@@ -84,6 +85,7 @@ export class SDFCanvas extends HTMLElement {
       { x: 0.0, y: 0.0, z: 0.0 },
       0.3,
       [0.5, 0.0, 0.0],
+      vec3.fromValues(0.8,0.8,0.8),
     ),
 
     // big belly (round cone)
@@ -93,6 +95,7 @@ export class SDFCanvas extends HTMLElement {
       { x: 0.0, y: 0.8, z: 0.0 }, // body_top
       0.1,
       [0.40, 0.4, 0.8],
+      vec3.fromValues(0.8,0.8,0.8),
     ),
 
     // // right upper arm
@@ -102,6 +105,7 @@ export class SDFCanvas extends HTMLElement {
       { x: 1.0, y: 1.0, z: 0.0 }, // elbow_right
       0.1,
       [0.32, 0.0, 0.0],
+      vec3.fromValues(0.8,0.8,0.8),
     ),
 
     // left upper arm
@@ -111,6 +115,7 @@ export class SDFCanvas extends HTMLElement {
       { x: -1.0, y: 1.0, z: 0.0 }, // elbow_left
       0.1,
       [0.32, 0.0, 0.0],
+      vec3.fromValues(0.8,0.8,0.8),
     ),
 
     // right thigh
@@ -120,6 +125,7 @@ export class SDFCanvas extends HTMLElement {
       { x: 0.25, y: -0.8, z: 0.5 }, // knee_right
       0.1,
       [0.32, 0.0, 0.0],
+      vec3.fromValues(0.8,0.8,0.8),
     ),
 
     // left thigh
@@ -129,6 +135,7 @@ export class SDFCanvas extends HTMLElement {
       { x: -0.25, y: -1.0, z: -0.2 }, // knee_left
       0.1,
       [0.32, 0.0, 0.0],
+      vec3.fromValues(0.8,0.8,0.8),
     ),
 
     // left forearm
@@ -138,6 +145,7 @@ export class SDFCanvas extends HTMLElement {
       { x: -1.5, y: 1.5, z: 0.0 }, // left_hand
       0.1,
       [0.32, 0.0, 0.0],
+      vec3.fromValues(0.8,0.8,0.8),
     ),
 
     // right forearm
@@ -147,6 +155,7 @@ export class SDFCanvas extends HTMLElement {
       { x: 1.5, y: 1.5, z: 0.0 }, // right_hand
       0.1,
       [0.32, 0.0, 0.0],
+      vec3.fromValues(0.8,0.8,0.8),
     ),
 
     // left foot
@@ -156,6 +165,7 @@ export class SDFCanvas extends HTMLElement {
       { x: -0.25, y: -1.8, z: -0.8 }, // left_foot
       0.01,
       [0.32, 0.0, 0.0],
+      vec3.fromValues(0.8,0.8,0.8),
     ),
 
     // right foot
@@ -165,6 +175,7 @@ export class SDFCanvas extends HTMLElement {
       { x: 0.25, y: -1.8, z: 0.8 }, // right_foot
       0.01,
       [0.32, 0.0, 0.0],
+      vec3.fromValues(0.8,0.8,0.8),
     ),
   ];
   // initial position

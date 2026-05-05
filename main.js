@@ -71,6 +71,7 @@ function convertFigureListToSDFPart(list) {
         node.param.sdf,
         node.start,
         node.end,
+        node.param.color,
         node.param.smooth_min,
         node.param.extra_param,
       ),
@@ -90,7 +91,8 @@ function createHumanFigure() {
     theta: Math.PI / 2,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
-    smooth_min: 0.1,
+    smooth_min: 0.15,
+    color: vec3.fromValues(0.1,0.1,0.1),
     extra_param: [0.3, 0.0, 0.0],
   });
   const head = FigureNode.create({
@@ -99,7 +101,8 @@ function createHumanFigure() {
     theta: 0,
   }, {
     sdf: SDF_PRIMITIES.SDF_SPHERE,
-    smooth_min: 0.0,
+    smooth_min: 0.01,
+    color: vec3.fromValues(1.0,0.7,0.4),
     extra_param: [0.4, 0.0, 0.0],
   });
   const arm_left = FigureNode.create({
@@ -108,7 +111,8 @@ function createHumanFigure() {
     theta: Math.PI,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
-    smooth_min: 0.0,
+    smooth_min: 0.01,
+    color: vec3.fromValues(1.0,0.7,0.4),
     extra_param: [0.25, 0.0, 0.0],
   });
   const arm_right = FigureNode.create({
@@ -117,7 +121,8 @@ function createHumanFigure() {
     theta: 0,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
-    smooth_min: 0.0,
+    smooth_min: 0.01,
+    color: vec3.fromValues(1.0,0.7,0.4),
     extra_param: [0.25, 0.0, 0.0],
   });
   const leg_left = FigureNode.create({
@@ -126,7 +131,8 @@ function createHumanFigure() {
     theta: 5 * Math.PI / 4,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
-    smooth_min: 0.0,
+    smooth_min: 0.01,
+    color: vec3.fromValues(0.1,0.1,0.1),
     extra_param: [0.25, 0.0, 0.0],
   });
   const leg_right = FigureNode.create({
@@ -135,7 +141,8 @@ function createHumanFigure() {
     theta: Math.PI / 4,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
-    smooth_min: 0.0,
+    smooth_min: 0.01,
+    color: vec3.fromValues(0.1,0.1,0.1),
     extra_param: [0.25, 0.0, 0.0],
   });
   const foot_left = FigureNode.create({
@@ -144,7 +151,8 @@ function createHumanFigure() {
     theta: Math.PI / 2,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
-    smooth_min: 0.0,
+    smooth_min: 0.01,
+    color: vec3.fromValues(1.0,0.7,0.4),
     extra_param: [0.25, 0.0, 0.0],
   });
   const foot_right = FigureNode.create({
@@ -153,7 +161,8 @@ function createHumanFigure() {
     theta: Math.PI / 2,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
-    smooth_min: 0.0,
+    smooth_min: 0.01,
+    color: vec3.fromValues(1.0,0.7,0.4),
     extra_param: [0.25, 0.0, 0.0],
   });
   body.addChild(head, 1.5);
