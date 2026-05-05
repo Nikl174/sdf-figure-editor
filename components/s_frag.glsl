@@ -283,7 +283,7 @@ void main() {
     float spc = ks * pow(clamp(coT, 0.0, 1.0), 30.0);
     t = 0.8;
     tEnd = 8.0;
-    rgb = vec3(0.08, 0.08, 0.08);
+    rgb = vec3(0.0, 0.0, 0.0);
     if (dif > epsPos) {
       for (int i = 0; i < 32; i++) {
         vec4 h = distToScene(pos + t * toL);
