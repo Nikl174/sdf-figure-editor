@@ -51,6 +51,8 @@ layout(std140) uniform FigurePartBlock {
   FigurePart parts[MAX_NUM_OF_PART];
 };
 
+FigurePart closestPart; // = FigurePart(float(SDF_NONE), vec3(0, 0, 0), vec3(0, 0, 0), vec3(0, 0, 0), 0.0, float[](0.0, 0.0, 0.0));
+
 // ------------------------------------------------------------
 // Global definition for the figure parts
 // ------------------------------------------------------------
@@ -100,6 +102,10 @@ float sd_ellipsoid(vec3 p, vec3 r) {
 
 float smoothMin(float d1, float d2, float k) {
   float h = clamp(0.5 + 0.5 * (d2 - d1) / k, 0.0, 1.0);
+  return mix(d2, d1, h) - k * h * (1.0 - h);
+}
+vec4 smoothMinColor(vec4 d1, vec4 d2, float k) {
+  float h = clamp(0.5 + 0.5 * (d2.w - d1.w) / k, 0.0, 1.0);
   return mix(d2, d1, h) - k * h * (1.0 - h);
 }
 // ---------SDF Primitives-------------
@@ -157,9 +163,14 @@ vec4 calc_sdf_for_figure_part(vec3 point, FigurePart part) {
     }
     ;
     break;
+    // case (SDF_NONE):
+    // {
+    //   dist = 10000000000.0;
+    // }
     default:
     // TODO
-    dist = 0.0;
+    // dist = 0.0;
+    dist = sd_plane(point + vec3(0.5, 0.0, 0), vec3(0, 1, 0), 2.0);
   }
   return vec4(part.color, dist);
 }
@@ -169,9 +180,9 @@ vec4 dist_to_figure(in vec3 point, FigurePart parts[MAX_NUM_OF_PART]) {
   // if (MAX_NUM_OF_PART <= 0)
   //   return -1.0;
 
-  vec4 distance = vec4(0.8, 0.8, 0.8, 0.0);
+  vec4 distance = vec4(0.8, 0.8, 0.8, 100000000.0);
 
-  distance.w = sd_plane(point + vec3(0.5, 0.0, 0), vec3(0, 1, 0), 2.0);
+  // distance.w = sd_plane(point + vec3(0.5, 0.0, 0), vec3(0, 1, 0), 2.0);
 
   // if (parts.length() >= 2) {
   // TODO: check that numOfPart<MAX_NUM_OF_PART
@@ -182,10 +193,15 @@ vec4 dist_to_figure(in vec3 point, FigurePart parts[MAX_NUM_OF_PART]) {
 
     FigurePart part = parts[i];
     vec4 dist_color = calc_sdf_for_figure_part(point, part);
-    if (distance.w > dist_color.w) distance = dist_color;
-    //i > 0 ?
+    if (distance.w > dist_color.w) {
+      // use current color of the object with smallest distance
+      distance.xyz = dist_color.xyz;
+      closestPart = part;
+    }
+    // new distance
+    distance.w = smoothMin(distance.w, dist_color.w, part.smooth_min);
     //TODO
-    // smoothMin(distance, dist_color, part.smooth_min); // : dist_color;
+    // distance = smoothMinColor(distance, dist_color, part.smooth_min);
   }
 
   // return min(distance, p1);
@@ -196,17 +212,17 @@ vec4 distToScene(in vec3 point) {
   return dist_to_figure(point, parts);
 }
 
-vec3 approxNormal(in vec3 pos) {
+vec3 approxNormal(in vec3 pos, in FigurePart part) {
   // we assume that pos is approximated with epsPos epsilon
   // vec3 n = vec3(0.0);
   // for (int i = 0; i < 4; i++)
   // {
   //   vec3 e = 0.5773 * (2.0 * vec3((((i + 3) >> 1) & 1), ((i >> 1) & 1), (i & 1)) - 1.0);
-  //   n += e * distToScene(pos + 0.0005 * e);
+  //   n += e * distToScene(pos + 0.0005 * e).w;
   // }
   // return normalize(n);
-  return normalize(n1 * distToScene(pos + n1).w + n2 * distToScene(pos + n2).w +
-      n3 * distToScene(pos + n3).w + n4 * distToScene(pos + n4).w);
+  return normalize(n1 * calc_sdf_for_figure_part(pos + n1, part).w + n2 * calc_sdf_for_figure_part(pos + n2, part).w +
+      n3 * calc_sdf_for_figure_part(pos + n3, part).w + n4 * calc_sdf_for_figure_part(pos + n4, part).w);
 }
 
 void main() {
@@ -263,7 +279,7 @@ void main() {
     // that is the intersection point
     vec3 pos = eye + t * dir;
     // the normal at the intersection point
-    vec3 nrm = approxNormal(pos);
+    vec3 nrm = approxNormal(pos, closestPart);
     // the direction of the light (seen from current pos)
     vec3 toL = normalize(lgt - pos);
     // cosine of angle between normal and direction to the light
