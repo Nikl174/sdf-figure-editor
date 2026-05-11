@@ -78,105 +78,105 @@ export class SDFCanvas extends HTMLElement {
   /** Initial figure
    * @type {SDFPart[]} */
   static SDF_FIGURE = [
-    // head sphere
-    new SDFPart(
-      SDF_PRIMITIES.SDF_SPHERE,
-      { x: 0.0, y: 0.8 + 1.8 * 0.5, z: 0.0 },
-      { x: 0.0, y: 0.0, z: 0.0 },
-      0.3,
-      [0.5, 0.0, 0.0],
-      vec3.fromValues(0.8,0.8,0.8),
-    ),
-
-    // big belly (round cone)
-    new SDFPart(
-      SDF_PRIMITIES.SDF_CAPSULE,
-      { x: 0.0, y: 0.0, z: 0.0 }, // body_bottom
-      { x: 0.0, y: 0.8, z: 0.0 }, // body_top
-      0.1,
-      [0.40, 0.4, 0.8],
-      vec3.fromValues(0.8,0.8,0.8),
-    ),
-
-    // // right upper arm
-    new SDFPart(
-      SDF_PRIMITIES.SDF_CAPSULE,
-      { x: 0.0, y: 0.8, z: 0.0 }, // body_top
-      { x: 1.0, y: 1.0, z: 0.0 }, // elbow_right
-      0.1,
-      [0.32, 0.0, 0.0],
-      vec3.fromValues(0.8,0.8,0.8),
-    ),
-
-    // left upper arm
-    new SDFPart(
-      SDF_PRIMITIES.SDF_CAPSULE,
-      { x: 0.0, y: 0.8, z: 0.0 }, // body_top
-      { x: -1.0, y: 1.0, z: 0.0 }, // elbow_left
-      0.1,
-      [0.32, 0.0, 0.0],
-      vec3.fromValues(0.8,0.8,0.8),
-    ),
-
-    // right thigh
-    new SDFPart(
-      SDF_PRIMITIES.SDF_CAPSULE,
-      { x: 0.2, y: -0.3, z: 0.0 }, // hip_right
-      { x: 0.25, y: -0.8, z: 0.5 }, // knee_right
-      0.1,
-      [0.32, 0.0, 0.0],
-      vec3.fromValues(0.8,0.8,0.8),
-    ),
-
-    // left thigh
-    new SDFPart(
-      SDF_PRIMITIES.SDF_CAPSULE,
-      { x: -0.2, y: -0.3, z: 0.0 }, // hip_left
-      { x: -0.25, y: -1.0, z: -0.2 }, // knee_left
-      0.1,
-      [0.32, 0.0, 0.0],
-      vec3.fromValues(0.8,0.8,0.8),
-    ),
-
-    // left forearm
-    new SDFPart(
-      SDF_PRIMITIES.SDF_CAPSULE,
-      { x: -1.0, y: 1.0, z: 0.0 }, // elbow_left
-      { x: -1.5, y: 1.5, z: 0.0 }, // left_hand
-      0.1,
-      [0.32, 0.0, 0.0],
-      vec3.fromValues(0.8,0.8,0.8),
-    ),
-
-    // right forearm
-    new SDFPart(
-      SDF_PRIMITIES.SDF_CAPSULE,
-      { x: 1.0, y: 1.0, z: 0.0 }, // elbow_right
-      { x: 1.5, y: 1.5, z: 0.0 }, // right_hand
-      0.1,
-      [0.32, 0.0, 0.0],
-      vec3.fromValues(0.8,0.8,0.8),
-    ),
-
-    // left foot
-    new SDFPart(
-      SDF_PRIMITIES.SDF_CAPSULE,
-      { x: -0.25, y: -1.0, z: -0.2 }, // knee_left
-      { x: -0.25, y: -1.8, z: -0.8 }, // left_foot
-      0.01,
-      [0.32, 0.0, 0.0],
-      vec3.fromValues(0.8,0.8,0.8),
-    ),
-
-    // right foot
-    new SDFPart(
-      SDF_PRIMITIES.SDF_CAPSULE,
-      { x: 0.25, y: -0.8, z: 0.5 }, // knee_right
-      { x: 0.25, y: -1.8, z: 0.8 }, // right_foot
-      0.01,
-      [0.32, 0.0, 0.0],
-      vec3.fromValues(0.8,0.8,0.8),
-    ),
+    // // head sphere
+    // new SDFPart(
+    //   SDF_PRIMITIES.SDF_SPHERE,
+    //   { x: 0.0, y: 0.8 + 1.8 * 0.5, z: 0.0 },
+    //   { x: 0.0, y: 0.0, z: 0.0 },
+    //   0.3,
+    //   [0.5, 0.0, 0.0],
+    //   vec3.fromValues(0.8,0.8,0.8),
+    // ),
+    //
+    // // big belly (round cone)
+    // new SDFPart(
+    //   SDF_PRIMITIES.SDF_CAPSULE,
+    //   { x: 0.0, y: 0.0, z: 0.0 }, // body_bottom
+    //   { x: 0.0, y: 0.8, z: 0.0 }, // body_top
+    //   0.1,
+    //   [0.40, 0.4, 0.8],
+    //   vec3.fromValues(0.8,0.8,0.8),
+    // ),
+    //
+    // // // right upper arm
+    // new SDFPart(
+    //   SDF_PRIMITIES.SDF_CAPSULE,
+    //   { x: 0.0, y: 0.8, z: 0.0 }, // body_top
+    //   { x: 1.0, y: 1.0, z: 0.0 }, // elbow_right
+    //   0.1,
+    //   [0.32, 0.0, 0.0],
+    //   vec3.fromValues(0.8,0.8,0.8),
+    // ),
+    //
+    // // left upper arm
+    // new SDFPart(
+    //   SDF_PRIMITIES.SDF_CAPSULE,
+    //   { x: 0.0, y: 0.8, z: 0.0 }, // body_top
+    //   { x: -1.0, y: 1.0, z: 0.0 }, // elbow_left
+    //   0.1,
+    //   [0.32, 0.0, 0.0],
+    //   vec3.fromValues(0.8,0.8,0.8),
+    // ),
+    //
+    // // right thigh
+    // new SDFPart(
+    //   SDF_PRIMITIES.SDF_CAPSULE,
+    //   { x: 0.2, y: -0.3, z: 0.0 }, // hip_right
+    //   { x: 0.25, y: -0.8, z: 0.5 }, // knee_right
+    //   0.1,
+    //   [0.32, 0.0, 0.0],
+    //   vec3.fromValues(0.8,0.8,0.8),
+    // ),
+    //
+    // // left thigh
+    // new SDFPart(
+    //   SDF_PRIMITIES.SDF_CAPSULE,
+    //   { x: -0.2, y: -0.3, z: 0.0 }, // hip_left
+    //   { x: -0.25, y: -1.0, z: -0.2 }, // knee_left
+    //   0.1,
+    //   [0.32, 0.0, 0.0],
+    //   vec3.fromValues(0.8,0.8,0.8),
+    // ),
+    //
+    // // left forearm
+    // new SDFPart(
+    //   SDF_PRIMITIES.SDF_CAPSULE,
+    //   { x: -1.0, y: 1.0, z: 0.0 }, // elbow_left
+    //   { x: -1.5, y: 1.5, z: 0.0 }, // left_hand
+    //   0.1,
+    //   [0.32, 0.0, 0.0],
+    //   vec3.fromValues(0.8,0.8,0.8),
+    // ),
+    //
+    // // right forearm
+    // new SDFPart(
+    //   SDF_PRIMITIES.SDF_CAPSULE,
+    //   { x: 1.0, y: 1.0, z: 0.0 }, // elbow_right
+    //   { x: 1.5, y: 1.5, z: 0.0 }, // right_hand
+    //   0.1,
+    //   [0.32, 0.0, 0.0],
+    //   vec3.fromValues(0.8,0.8,0.8),
+    // ),
+    //
+    // // left foot
+    // new SDFPart(
+    //   SDF_PRIMITIES.SDF_CAPSULE,
+    //   { x: -0.25, y: -1.0, z: -0.2 }, // knee_left
+    //   { x: -0.25, y: -1.8, z: -0.8 }, // left_foot
+    //   0.01,
+    //   [0.32, 0.0, 0.0],
+    //   vec3.fromValues(0.8,0.8,0.8),
+    // ),
+    //
+    // // right foot
+    // new SDFPart(
+    //   SDF_PRIMITIES.SDF_CAPSULE,
+    //   { x: 0.25, y: -0.8, z: 0.5 }, // knee_right
+    //   { x: 0.25, y: -1.8, z: 0.8 }, // right_foot
+    //   0.01,
+    //   [0.32, 0.0, 0.0],
+    //   vec3.fromValues(0.8,0.8,0.8),
+    // ),
   ];
   // initial position
   static CAM_POSITION = rotatedPos(12.0, -0.5, 3);
@@ -422,7 +422,7 @@ export class SDFCanvas extends HTMLElement {
       const offset = 0;
       const vertexCount = 4;
       this.updateFps(SDFCanvas.FPS_INTERVAL);
-      // updateFigureBuffer(this.#gl, this.#shader_program, this.#figure);
+      updateFigureBuffer(this.#gl, this.#shader_program, this.#figure);
       this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, offset, vertexCount);
     }
     if (this.#animating) {
@@ -466,4 +466,4 @@ export class SDFCanvas extends HTMLElement {
 globalThis.customElements.define(
   "sdf-canvas",
   SDFCanvas,
-);
+)
