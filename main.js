@@ -24,6 +24,7 @@ let radius = CAM_RADIUS;
 let theta = CAM_THETA;
 let phi = CAM_PHI;
 let dragging = false;
+let rotating = false;
 
 let figure = new FigureNode();
 /**
@@ -48,7 +49,7 @@ function animate(animVars) {
       phi,
       theta,
     );
-  } else {
+  } else if (rotating) {
     animVars.camPos = rotatedPos(radius, camRotRad, animVars.camPos[1]);
     camRotRad += CAM_ROT_INC_RAD;
   }
@@ -472,7 +473,7 @@ function createRiggedHuman() {
   const upperLeg_right = FigureNode.create({
     radius: 0.9,
     phi: Math.PI / 2,
-    theta: (3 * Math.PI / 2 + 0.3),
+    theta: 3 * Math.PI / 2 + 0.3,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
     smooth_min: 0.03,
@@ -749,6 +750,14 @@ function main() {
     /** @type {SDFCanvas|null} */ (document.getElementById("sdf-view"));
   const editor =
     /** @type {SDFEditor|null} */ (document.getElementById("sdf-editor"));
+  const rotate_box = /** @type {HTMLInputElement|null}*/ (document
+    .getElementById("rotate"));
+  console.log(rotate_box);
+  rotate_box?.addEventListener("click", (event) => {
+    // console.log(event.target.checked);
+
+    rotating = event.target.checked;
+  });
 
   if (!canvas || !editor) {
     throw new Error("Canvas or editor not found in document!");

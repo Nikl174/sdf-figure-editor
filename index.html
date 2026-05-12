@@ -59,7 +59,16 @@
 <body>
 
   <div id="sdf">
-    <sdf-canvas id="sdf-view" width='400' height='400'></sdf-canvas>
+    <div>
+      <sdf-canvas id="sdf-view" width='400' height='400'></sdf-canvas>
+      <fieldset>
+        <legend>Settings</legend>
+        <div>
+          <input type="checkbox" name="rotate" id="rotate">
+          <label for="rotate">Rotate</label>
+        </div>
+      </fieldset>
+    </div>
     <sdf-editor id="sdf-editor"></sdf-editor>
   </div>
 
