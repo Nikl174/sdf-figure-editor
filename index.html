@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Test Web Component SDF Canvas</title>
+  <title>SDF Figure Editor</title>
   <script src="components/SDFCanvas.js" type="module"></script>
   <script src="components/FigureEditor.js" type="module"></script>
 
@@ -16,7 +16,7 @@
 
     #sdf {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       align-items: stretch;
       height: 100vh;
       width: 100%;
@@ -31,6 +31,7 @@
       flex: 1;
       min-width: 0;
       overflow: auto;
+      resize: vertical;
     }
 
     /* Make canvas fill its container */
@@ -39,10 +40,27 @@
       height: 100%;
     }
 
+    #sdf-half {
+      display: flex;
+      flex-direction: row;
+    }
+
+    #settings {
+      flex: 0;
+      min-width: 20%;
+      align-items: stretch;
+    }
+
     /* Responsive: stack on small screens */
     @media (max-width: 900px) {
-      #sdf {
-        flex-direction: column;
+
+      /* #sdf { */
+      /*   flex-direction: column; */
+      /* } */
+      #settings {
+        flex: 0;
+        min-width: 20%;
+        align-items: stretch;
       }
 
       sdf-canvas {
@@ -59,13 +77,17 @@
 <body>
 
   <div id="sdf">
-    <div>
-      <sdf-canvas id="sdf-view" width='400' height='400'></sdf-canvas>
-      <fieldset>
+    <div id="sdf-half">
+      <sdf-canvas id="sdf-view" width='500' height='500'></sdf-canvas>
+      <fieldset id="settings">
         <legend>Settings</legend>
         <div>
           <input type="checkbox" name="rotate" id="rotate">
           <label for="rotate">Rotate</label>
+        </div>
+        <div>
+          <input type="checkbox" name="animate" id="animate">
+          <label for="animate">Animating</label>
         </div>
       </fieldset>
     </div>

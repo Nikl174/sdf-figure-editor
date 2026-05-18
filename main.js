@@ -26,6 +26,8 @@ let phi = CAM_PHI;
 let dragging = false;
 let rotating = false;
 
+let fig_pos = vec3.fromValues(0, 0, 0);
+
 let figure = new FigureNode();
 /**
  * @param {AnimVars} animVars description
@@ -752,10 +754,9 @@ function main() {
     /** @type {SDFEditor|null} */ (document.getElementById("sdf-editor"));
   const rotate_box = /** @type {HTMLInputElement|null}*/ (document
     .getElementById("rotate"));
-  console.log(rotate_box);
+  const animate_box = /** @type {HTMLInputElement|null}*/ (document
+    .getElementById("animate"));
   rotate_box?.addEventListener("click", (event) => {
-    // console.log(event.target.checked);
-
     rotating = event.target.checked;
   });
 
@@ -771,6 +772,9 @@ function main() {
   editor.figureText = JSON.stringify(figure);
   // console.log(convertFigureListToSDFPart(figure_list));
   canvas.figure = convertFigureListToSDFPart(figure_list);
+  animate_box?.addEventListener("click", (event) => {
+    canvas.animating = event.target.checked;
+  });
 
   SDFEditor.onFigureEvent(editor, (event) => {
     // const figure = JSON.parse(event.detail.figureJson).map((
@@ -778,7 +782,7 @@ function main() {
     // ) => SDFPart.fromJSON(obj));
     const figure_json = JSON.parse(event.detail.figureJson);
     const fig = FigureNode.fromJSON(figure_json);
-    const fig_list = fig.transformToList(vec3.fromValues(0, 0, 0));
+    const fig_list = fig.transformToList(fig_pos);
 
     canvas.figure = convertFigureListToSDFPart(fig_list);
     // canvas._animateStep()

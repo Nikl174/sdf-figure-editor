@@ -63,11 +63,11 @@ p {
 </style>
 <div id="view">
   <p>Click to move, Scroll to zoom, Esc to unlock mouse</p>
-  <button id='toggle' type="button">Start Animation</button>
   <div class="gl_container">
     <canvas id="glCanvas" width="500" height="500" style="max-width:100%;height:auto;">
     </canvas>
-  <div id="fps">FPS: —</div>
+    <div id="fps">FPS: —</div>
+  </div>
 </div>
 `;
 
@@ -300,19 +300,19 @@ export class SDFCanvas extends HTMLElement {
         figure: this.figure,
         custom: new Map(),
       };
-      this.shadowRoot.getElementById("toggle")?.addEventListener(
-        "click",
-        (event) => {
-          const toggle_btn = event.currentTarget;
-          this.#animating = !this.#animating;
-          if (this.#animating) {
-            toggle_btn.textContent = `Toggle Animation: ▶`;
-            globalThis.requestAnimationFrame(this._animateStep);
-          } else {
-            toggle_btn.textContent = `Toggle Animation: ⏸`;
-          }
-        },
-      );
+      // this.shadowRoot.getElementById("toggle")?.addEventListener(
+      //   "click",
+      //   (event) => {
+      //     const toggle_btn = event.currentTarget;
+      //     this.#animating = !this.#animating;
+      //     if (this.#animating) {
+      //       toggle_btn.textContent = `Toggle Animation: ▶`;
+      //       globalThis.requestAnimationFrame(this._animateStep);
+      //     } else {
+      //       toggle_btn.textContent = `Toggle Animation: ⏸`;
+      //     }
+      //   },
+      // );
     }
   }
   /** @brief When the element is actually attached to DOM, this starts the actual render, getting the shader files, compiling it and starting an animation
@@ -466,4 +466,4 @@ export class SDFCanvas extends HTMLElement {
 globalThis.customElements.define(
   "sdf-canvas",
   SDFCanvas,
-)
+);
