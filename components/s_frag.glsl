@@ -214,15 +214,15 @@ vec4 distToScene(in vec3 point) {
 
 vec3 approxNormal(in vec3 pos, in FigurePart part) {
   // we assume that pos is approximated with epsPos epsilon
-  // vec3 n = vec3(0.0);
-  // for (int i = 0; i < 4; i++)
-  // {
-  //   vec3 e = 0.5773 * (2.0 * vec3((((i + 3) >> 1) & 1), ((i >> 1) & 1), (i & 1)) - 1.0);
-  //   n += e * distToScene(pos + 0.0005 * e).w;
-  // }
-  // return normalize(n);
-  return normalize(n1 * calc_sdf_for_figure_part(pos + n1, part).w + n2 * calc_sdf_for_figure_part(pos + n2, part).w +
-      n3 * calc_sdf_for_figure_part(pos + n3, part).w + n4 * calc_sdf_for_figure_part(pos + n4, part).w);
+  vec3 n = vec3(0.0);
+  for (int i = 0; i < 4; i++)
+  {
+    vec3 e = 0.5773 * (2.0 * vec3((((i + 3) >> 1) & 1), ((i >> 1) & 1), (i & 1)) - 1.0);
+    n += e * distToScene(pos + 0.0005 * e).w;
+  }
+  return normalize(n);
+  // return normalize(n1 * calc_sdf_for_figure_part(pos + n1, part).w + n2 * calc_sdf_for_figure_part(pos + n2, part).w +
+  //     n3 * calc_sdf_for_figure_part(pos + n3, part).w + n4 * calc_sdf_for_figure_part(pos + n4, part).w);
 }
 
 void main() {

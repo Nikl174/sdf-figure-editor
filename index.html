@@ -6,12 +6,14 @@
   <title>SDF Figure Editor</title>
   <script src="components/SDFCanvas.js" type="module"></script>
   <script src="components/FigureEditor.js" type="module"></script>
+  <script src="components/FigureNodeEditor.js" type="module"></script>
 
   <style>
     body {
       margin: 0;
       background: rgba(6, 8, 10, 0.9);
       font-family: sans-serif;
+      color: whitesmoke;
     }
 
     #sdf {
@@ -20,6 +22,7 @@
       align-items: stretch;
       height: 100vh;
       width: 100%;
+      
     }
 
     sdf-canvas {
@@ -78,18 +81,26 @@
 
   <div id="sdf">
     <div id="sdf-half">
-      <sdf-canvas id="sdf-view" width='500' height='500'></sdf-canvas>
-      <fieldset id="settings">
-        <legend>Settings</legend>
-        <div>
-          <input type="checkbox" name="rotate" id="rotate">
-          <label for="rotate">Rotate</label>
-        </div>
-        <div>
-          <input type="checkbox" name="animate" id="animate">
-          <label for="animate">Animating</label>
-        </div>
-      </fieldset>
+      <sdf-canvas id="sdf-view" width='400' height='400'></sdf-canvas>
+      <div id="settings">
+        <fieldset>
+          <legend>Settings</legend>
+          <div>
+            <input type="checkbox" name="rotate" id="rotate">
+            <label for="rotate">Rotate</label>
+          </div>
+          <div>
+            <input type="checkbox" name="animate" id="animate">
+            <label for="animate">Animating</label>
+          </div>
+          <div>
+            <input type="checkbox" name="edit" id="edit">
+            <label for="edit">Edit Figure</label>
+          </div>
+        </fieldset>
+        <figure-node-editor id="node-editor"></figure-node-editor>
+
+      </div>
     </div>
     <sdf-editor id="sdf-editor"></sdf-editor>
   </div>

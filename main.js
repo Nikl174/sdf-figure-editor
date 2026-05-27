@@ -1,6 +1,7 @@
 import { computeCameraPosition, rotatedPos } from "./lib/utils.js";
 import { SDFCanvas } from "./components/SDFCanvas.js";
 import { SDFEditor } from "./components/FigureEditor.js";
+import { FigureNodeEditor } from "./components/FigureNodeEditor.js";
 import { SDF_PRIMITIES, SDFPart } from "./lib/figure.js";
 import { FigureNode } from "./lib/figureGraph.js";
 import { mat3, vec3 } from "./lib/matrix.js";
@@ -15,7 +16,7 @@ let X_INC = 0.010;
 // horizontal angle
 const CAM_THETA = 0;
 // vertical angle (avoid 0 or π)
-const CAM_PHI = 1.2;
+const CAM_PHI = 2;
 // radius from camera to [0,0,0]
 const CAM_RADIUS = 10;
 
@@ -26,7 +27,11 @@ let phi = CAM_PHI;
 let dragging = false;
 let rotating = false;
 
-let fig_pos = vec3.fromValues(0, 0, 0);
+const fig_pos = vec3.fromValues(0, 0, 0);
+
+/** @type {[FigureNode]} */
+const fig_component_list = [];
+let current_figure_id = 0;
 
 let figure = new FigureNode();
 /**
@@ -38,12 +43,6 @@ function animate(animVars) {
     animVars.custom.set("camRotRad", 0);
     camRotRad = 0;
   }
-  // let x = animVars.figure[6].end_point.x;
-  // if (x < -1.5 || x > -1.3) {
-  //   X_INC *= -1;
-  // }
-  // animVars.figure[6].end_point.x += X_INC;
-  // animVars.figure[7].end_point.x -= X_INC;
   if (dragging) {
     animVars.camPos = computeCameraPosition(
       [0, 0, 0],
@@ -203,6 +202,17 @@ function createFigure() {
     extra_param: [0.25, 0.0, 0.0],
   });
 
+  fig_component_list.push(head);
+  fig_component_list.push(body);
+  fig_component_list.push(upperArm_right);
+  fig_component_list.push(lowerArm_right);
+  fig_component_list.push(upperArm_left);
+  fig_component_list.push(lowerArm_left);
+  fig_component_list.push(pelvis);
+  fig_component_list.push(upperLeg_right);
+  fig_component_list.push(lowerLeg_right);
+  fig_component_list.push(upperArm_right);
+  fig_component_list.push(lowerArm_right);
   body.addChild(head, 1.5);
   body.addChild(pelvis, 0);
   body.addChild(upperArm_left, 1);
@@ -217,6 +227,14 @@ function createFigure() {
   return body;
 }
 
+/** @brief update the visual values inside of the editor
+ * @param {FigureNodeEditor} editor the node editor
+ * @param {[FigureNode]} nodes the list of nodes from which one is selected
+ * @param {Number} index index of the selected node
+ */
+function updateNodeEditor(editor, nodes, index) {
+  editor.setSelection(index, nodes.length - 1);
+  editor.setValues(nodes[index].vector);
 }
 
 function main() {
@@ -224,13 +242,6 @@ function main() {
     /** @type {SDFCanvas|null} */ (document.getElementById("sdf-view"));
   const editor =
     /** @type {SDFEditor|null} */ (document.getElementById("sdf-editor"));
-  const rotate_box = /** @type {HTMLInputElement|null}*/ (document
-    .getElementById("rotate"));
-  const animate_box = /** @type {HTMLInputElement|null}*/ (document
-    .getElementById("animate"));
-  rotate_box?.addEventListener("click", (event) => {
-    rotating = event.target.checked;
-  });
 
   if (!canvas || !editor) {
     throw new Error("Canvas or editor not found in document!");
@@ -244,13 +255,10 @@ function main() {
       dragging = true;
       await e.currentTarget.requestPointerLock();
     }
-
-    // console.log("Dragging", dragging, e);
   });
   canvas.canvas.addEventListener("mouseup", (e) => {
     dragging = false;
     document.exitPointerLock();
-    // console.log("Stopped Dragging", dragging, e);
   });
   canvas.canvas.addEventListener("wheel", (e) => {
     radius += e.deltaY * 0.01;
@@ -259,20 +267,64 @@ function main() {
   canvas.canvas.addEventListener("mousemove", (e) => {
     // left mouse button pressed
     if (dragging) {
-      // if (!dragging) return;
-      // const dx = e.clientX - lastX;
-      // const dy = e.clientY - lastY;
-      // lastX = e.clientX;
-      // lastY = e.clientY; // Sensitivity
       const dx = e.movementX;
       const dy = e.movementY;
-      theta += dx * 0.01;
-      phi += -dy * 0.01; // Clamp phi to avoid flipping
+      theta += dy * 0.01;
+      phi += -dx * 0.01; // Clamp phi to avoid flipping
       const eps = 0.1;
       phi = Math.max(eps, Math.min(Math.PI - eps, phi));
     }
   });
   // ---------
+
+  // Settings
+  // ---------
+  const rotate_box = /** @type {HTMLInputElement|null}*/ (document
+    .getElementById("rotate"));
+  rotating = rotate_box.checked;
+  const animate_box = /** @type {HTMLInputElement|null}*/ (document
+    .getElementById("animate"));
+  canvas.animating = animate_box.checked;
+  const edit_figure_box = /** @type {HTMLInputElement|null}*/ (document
+    .getElementById("edit"));
+  const node_editor = /** @type {FigureNodeEditor|null}*/ (document
+    .getElementById("node-editor"));
+  node_editor.style.display = node_editor.checked ? "block" : "none";
+
+  animate_box?.addEventListener("change", (event) => {
+    canvas.animating = event.target.checked;
+  });
+  rotate_box?.addEventListener("change", (event) => {
+    rotating = event.target.checked;
+  });
+  edit_figure_box.addEventListener("change", (event) => {
+    node_editor.style.display = event.target.checked ? "block" : "none";
+  });
+
+  node_editor.addEventListener("previous-item", () => {
+    if (current_figure_id > 0) {
+      current_figure_id--;
+      updateNodeEditor(node_editor, fig_component_list, current_figure_id);
+    }
+  });
+  node_editor.addEventListener("next-item", () => {
+    if (current_figure_id < fig_component_list.length) {
+      current_figure_id++;
+      updateNodeEditor(node_editor, fig_component_list, current_figure_id);
+    }
+  });
+  node_editor.addEventListener("value-change", (event) => {
+    const node = fig_component_list[current_figure_id];
+    const vec = node.vector;
+    vec[event.detail.property] = event.detail.value;
+    node.vector = vec;
+
+    const identity = mat3.create();
+    const figure_list = figure.transformToList(fig_pos, identity);
+    canvas.figure = convertFigureListToSDFPart(figure_list);
+  });
+  // ---------
+
   // figure handling
   // ---------
   figure = createFigure();
