@@ -431,8 +431,10 @@ export class SDFCanvas extends HTMLElement {
   }
   /** @param {boolean} value new value starting the animation when true */
   set animating(value) {
+    if (!this.#animating && value) {
+      globalThis.requestAnimationFrame(this._animateStep);
+    }
     this.#animating = value;
-    if (value) globalThis.requestAnimationFrame(this._animateStep);
   }
   /** @brief return animating value indicating if animation started */
   get animating() {
@@ -443,23 +445,34 @@ export class SDFCanvas extends HTMLElement {
     this.#figure = value;
     // TODO necessary? + await for shader_program!
     if (this.#shader_program != null) {
-      const num_of_parts_loc = this.#gl.getUniformLocation(
-        this.#shader_program,
-        NUM_OF_PARTS_NAME,
-      );
-      // this.#gl.useProgram(this.#shader_program);
-      // TODO set the actual number of parts past to the shader
-      this.#gl.uniform1i(
-        num_of_parts_loc,
-        this.figure.length,
-      );
+      this._updateNumOfParts();
       updateFigureBuffer(this.#gl, this.#shader_program, this.#figure);
+      {
+        const offset = 0;
+        const vertexCount = 4;
+        this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, offset, vertexCount);
+      }
     }
-    globalThis.requestAnimationFrame(this._animateStep);
   }
   /** @brief return current figure constructed of SDFPart */
   get figure() {
     return this.#figure;
+  }
+
+  /**
+   * @brief update the shader uniform variable
+   */
+  _updateNumOfParts() {
+    const num_of_parts_loc = this.#gl.getUniformLocation(
+      this.#shader_program,
+      NUM_OF_PARTS_NAME,
+    );
+    this.#gl.useProgram(this.#shader_program);
+    // TODO set the actual number of parts past to the shader
+    this.#gl.uniform1i(
+      num_of_parts_loc,
+      this.#figure.length,
+    );
   }
 }
 

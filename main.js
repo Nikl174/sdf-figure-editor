@@ -3,7 +3,7 @@ import { SDFCanvas } from "./components/SDFCanvas.js";
 import { SDFEditor } from "./components/FigureEditor.js";
 import { SDF_PRIMITIES, SDFPart } from "./lib/figure.js";
 import { FigureNode } from "./lib/figureGraph.js";
-import { vec3 } from "./lib/matrix.js";
+import { mat3, vec3 } from "./lib/matrix.js";
 
 /**
  * @import {AnimVars} from "./components/SDFCanvas.js"
@@ -87,202 +87,136 @@ function convertFigureListToSDFPart(list) {
  * @brief Construct an example human figure using FigureNode structure
  * @return {FigureNode} the constructed human figure
  */
-function createRiggedHuman() {
+function createFigure() {
   const skin = vec3.fromValues(1.0, 0.75, 0.6);
   const shirt = vec3.fromValues(0.2, 0.2, 0.25);
   const pants = vec3.fromValues(0.1, 0.1, 0.5);
 
-  // --- ROOT (Pelvis / main body mass) ---
-  const pelvis = FigureNode.create({
-    radius: 0.2,
-    phi: Math.PI / 2,
-    theta: Math.PI / 2,
-  }, {
-    sdf: SDF_PRIMITIES.SDF_CAPSULE,
-    smooth_min: 0.08,
-    color: pants,
-    extra_param: [0.3, 0.0, 0.0],
-  });
-
-  // --- SPINE / CHEST ---
-  const spine = FigureNode.create({
-    radius: 0.8,
-    phi: Math.PI / 2,
-    theta: Math.PI / 2,
+  const body = FigureNode.create({
+    radius: 1.2,
+    phi: 0,
+    theta: 0,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
     smooth_min: 0.05,
     color: shirt,
     extra_param: [0.29, 0.0, 0.0],
   });
-
-  // --- HEAD ---
+  const pelvis = FigureNode.create({
+    radius: 0.2,
+    phi: Math.PI,
+    theta: Math.PI,
+  }, {
+    sdf: SDF_PRIMITIES.SDF_CAPSULE,
+    smooth_min: 0.05,
+    color: pants,
+    extra_param: [0.3, 0.0, 0.0],
+  });
   const head = FigureNode.create({
     radius: 0.35,
     phi: 0,
     theta: 0,
   }, {
     sdf: SDF_PRIMITIES.SDF_SPHERE,
-    smooth_min: 0.02,
+    smooth_min: 0.03,
     color: skin,
-    extra_param: [0.3, 0.0, 0.0],
-  });
-
-  // =========================
-  // 🎯 SHOULDER RIG (ONE SIDE)
-  // =========================
-  const shoulder_left = FigureNode.create({
-    radius: 0.2,
-    phi: Math.PI / 2,
-    theta: Math.PI, // left side
-  }, {
-    sdf: SDF_PRIMITIES.SDF_CAPSULE, // joint visualization
-    smooth_min: 0.1,
-    color: shirt,
-    extra_param: [0.2, 0.0, 0.0],
-  });
-  const shoulder_right = FigureNode.create({
-    radius: 0.2,
-    phi: Math.PI / 2,
-    theta: 2 * Math.PI, // right side
-  }, {
-    sdf: SDF_PRIMITIES.SDF_CAPSULE, // joint visualization
-    smooth_min: 0.1,
-    color: shirt,
-    extra_param: [0.2, 0.0, 0.0],
-  });
-
-  const upperArm_left = FigureNode.create({
-    radius: 0.7,
-    phi: Math.PI / 2,
-    theta: Math.PI,
-  }, {
-    sdf: SDF_PRIMITIES.SDF_CAPSULE,
-    smooth_min: 0.05,
-    color: shirt,
-    extra_param: [0.18, 0.0, 0.0],
+    extra_param: [0.37, 0.0, 0.0],
   });
   const upperArm_right = FigureNode.create({
-    radius: 0.7,
-    phi: Math.PI / 2,
-    theta: 2 * Math.PI,
+    radius: 0.8,
+    phi: 0,
+    theta: Math.PI / 2,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
     smooth_min: 0.05,
     color: shirt,
-    extra_param: [0.18, 0.0, 0.0],
+    extra_param: [0.23, 0.0, 0.0],
   });
-
-  const lowerArm_left = FigureNode.create({
-    radius: 0.7,
-    phi: Math.PI / 2,
-    theta: Math.PI,
+  const upperArm_left = FigureNode.create({
+    radius: 0.8,
+    phi: 0,
+    theta: -Math.PI / 2,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
     smooth_min: 0.05,
-    color: skin,
-    extra_param: [0.15, 0.0, 0.0],
+    color: shirt,
+    extra_param: [0.23, 0.0, 0.0],
   });
   const lowerArm_right = FigureNode.create({
-    radius: 0.7,
-    phi: Math.PI / 2,
-    theta: 2 * Math.PI,
+    radius: 1.0,
+    phi: 0,
+    theta: 0,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
     smooth_min: 0.05,
     color: skin,
-    extra_param: [0.15, 0.0, 0.0],
+    extra_param: [0.20, 0.0, 0.0],
   });
-
-  // ======================
-  // 🦵 HIP RIG (ONE SIDE)
-  // ======================
-  const hip_left = FigureNode.create({
-    radius: 0.2,
-    phi: Math.PI / 2,
-    theta: Math.PI,
-  }, {
-    sdf: SDF_PRIMITIES.SDF_SPHERE,
-    smooth_min: 0.1,
-    color: pants,
-    extra_param: [0.0, 0.0, 0.0],
-  });
-  const hip_right = FigureNode.create({
-    radius: 0.2,
-    phi: Math.PI / 2,
-    theta: -Math.PI,
-  }, {
-    sdf: SDF_PRIMITIES.SDF_SPHERE,
-    smooth_min: 0.1,
-    color: pants,
-    extra_param: [0.0, 0.0, 0.0],
-  });
-
-  const upperLeg_left = FigureNode.create({
-    radius: 0.9,
-    phi: Math.PI / 2,
-    theta: -1 * (Math.PI / 2 + 0.3),
+  const lowerArm_left = FigureNode.create({
+    radius: 1.0,
+    phi: 0,
+    theta: 0,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
-    smooth_min: 0.03,
-    color: pants,
-    extra_param: [0.22, 0.0, 0.0],
+    smooth_min: 0.05,
+    color: skin,
+    extra_param: [0.20, 0.0, 0.0],
   });
   const upperLeg_right = FigureNode.create({
-    radius: 0.9,
-    phi: Math.PI / 2,
-    theta: 3 * Math.PI / 2 + 0.3,
+    radius: 1.0,
+    phi: 0,
+    theta: Math.PI / 8,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
-    smooth_min: 0.03,
+    smooth_min: 0.05,
     color: pants,
-    extra_param: [0.22, 0.0, 0.0],
+    extra_param: [0.28, 0.0, 0.0],
   });
-
-  const lowerLeg_left = FigureNode.create({
-    radius: 0.9,
-    phi: Math.PI / 2,
-    theta: -Math.PI / 2,
+  const upperLeg_left = FigureNode.create({
+    radius: 1.0,
+    phi: 0,
+    theta: -Math.PI / 8,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
-    smooth_min: 0.03,
+    smooth_min: 0.05,
     color: pants,
-    extra_param: [0.2, 0.0, 0.0],
+    extra_param: [0.28, 0.0, 0.0],
   });
-
   const lowerLeg_right = FigureNode.create({
-    radius: 0.9,
-    phi: Math.PI / 2,
-    theta: -Math.PI / 2,
+    radius: 1.2,
+    phi: 0,
+    theta: -Math.PI / 8,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
-    smooth_min: 0.03,
+    smooth_min: 0.05,
     color: pants,
-    extra_param: [0.2, 0.0, 0.0],
+    extra_param: [0.25, 0.0, 0.0],
   });
-  // ======================
-  // 🔗 HIERARCHY (THE RIG)
-  // ======================
+  const lowerLeg_left = FigureNode.create({
+    radius: 1.2,
+    phi: 0,
+    theta: Math.PI / 8,
+  }, {
+    sdf: SDF_PRIMITIES.SDF_CAPSULE,
+    smooth_min: 0.05,
+    color: pants,
+    extra_param: [0.25, 0.0, 0.0],
+  });
 
-  pelvis.addChild(spine, 1.0);
-  spine.addChild(head, 1.5);
+  body.addChild(head, 1.5);
+  body.addChild(pelvis, 0);
+  body.addChild(upperArm_left, 1);
+  body.addChild(upperArm_right, 1);
+  pelvis.addChild(upperLeg_left, 1);
+  pelvis.addChild(upperLeg_right, 1);
+  upperLeg_left.addChild(lowerLeg_left, 1);
+  upperLeg_right.addChild(lowerLeg_right, 1);
+  upperArm_left.addChild(lowerArm_left, 1);
+  upperArm_right.addChild(lowerArm_right, 1);
 
-  // shoulder chain
-  spine.addChild(shoulder_left, 0.9);
-  spine.addChild(shoulder_right, 0.9);
-  shoulder_left.addChild(upperArm_left, 1.0);
-  shoulder_right.addChild(upperArm_right, 1.0);
-  upperArm_left.addChild(lowerArm_left, 1.0);
-  upperArm_right.addChild(lowerArm_right, 1.0);
+  return body;
+}
 
-  // hip chain
-  pelvis.addChild(hip_left, 0.0);
-  hip_left.addChild(upperLeg_left, 0.3);
-  hip_left.addChild(upperLeg_right, -0.3);
-  upperLeg_left.addChild(lowerLeg_left, 1.0);
-  upperLeg_right.addChild(lowerLeg_right, 1.0);
-
-  return pelvis;
 }
 
 function main() {
@@ -301,29 +235,8 @@ function main() {
   if (!canvas || !editor) {
     throw new Error("Canvas or editor not found in document!");
   }
-
-  figure = createRiggedHuman();
-  const figure_list = figure.transformToList(vec3.fromValues(0, 1, 0));
-
   canvas.animateCallback = animate;
-  editor.figureText = JSON.stringify(figure);
-  // console.log(convertFigureListToSDFPart(figure_list));
-  canvas.figure = convertFigureListToSDFPart(figure_list);
-  animate_box?.addEventListener("click", (event) => {
-    canvas.animating = event.target.checked;
-  });
 
-  SDFEditor.onFigureEvent(editor, (event) => {
-    // const figure = JSON.parse(event.detail.figureJson).map((
-    //   /**@type {String}*/ obj,
-    // ) => SDFPart.fromJSON(obj));
-    const figure_json = JSON.parse(event.detail.figureJson);
-    const fig = FigureNode.fromJSON(figure_json);
-    const fig_list = fig.transformToList(fig_pos);
-
-    canvas.figure = convertFigureListToSDFPart(fig_list);
-    // canvas._animateStep()
-  });
   // Mouse interaction callbacks TODO
   // ---------
   canvas.canvas.addEventListener("mousedown", async (e) => {
@@ -358,6 +271,24 @@ function main() {
       const eps = 0.1;
       phi = Math.max(eps, Math.min(Math.PI - eps, phi));
     }
+  });
+  // ---------
+  // figure handling
+  // ---------
+  figure = createFigure();
+  const identity = mat3.create();
+  const figure_list = figure.transformToList(fig_pos, identity);
+  canvas.figure = convertFigureListToSDFPart(figure_list);
+  editor.figureText = JSON.stringify(figure);
+
+  SDFEditor.onFigureEvent(editor, (event) => {
+    const figure_json = JSON.parse(event.detail.figureJson);
+    const fig = FigureNode.fromJSON(figure_json);
+    const fig_list = fig.transformToList(fig_pos, identity);
+    console.log(fig_list);
+
+    canvas.figure = convertFigureListToSDFPart(fig_list);
+    updateNodeEditor(node_editor, fig_component_list, current_figure_id);
   });
   // ---------
 }
