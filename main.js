@@ -289,7 +289,7 @@ function main() {
     .getElementById("edit"));
   const node_editor = /** @type {FigureNodeEditor|null}*/ (document
     .getElementById("node-editor"));
-  node_editor.style.display = node_editor.checked ? "block" : "none";
+  node_editor.style.display = edit_figure_box.checked ? "block" : "none";
 
   animate_box?.addEventListener("change", (event) => {
     canvas.animating = event.target.checked;
