@@ -73,7 +73,9 @@ template.innerHTML = `
     color: var(--text-muted);
   }
 
-  .value-input {
+  .value-input[type="number"] {
+      -webkit-appearance: none;
+      -moz-appearance: textfield;
     width: 70px;
     padding: 4px 6px;
     background: var(--bg-input);
@@ -95,8 +97,25 @@ template.innerHTML = `
     margin: 0;
     accent-color: var(--accent);
     cursor: pointer;
+    background: #0f0;
   }
 </style>
+
+<datalist id="piTicks">
+  <option value="-3.14" label="-π"></option>
+  <option value="-1.57" label="-π/2"></option>
+  <option value="0" label="0"></option>
+  <option value="1.57" label="π/2"></option>
+  <option value="3.14" label="π"></option>
+</datalist>
+
+<datalist id="radiusTicks">
+  <option value="0"></option>
+  <option value="0.5"></option>
+  <option value="1"></option>
+  <option value="1.5"></option>
+  <option value="2"></option>
+</datalist>
 
 <fieldset>
   <legend>Edit Part</legend>
@@ -113,25 +132,25 @@ template.innerHTML = `
       <label for="radiusSlider">Radius</label>
       <input class="value-input" type="number" id="radiusInput" min="0.1" max="2.0" step="0.01">
     </div>
-    <input type="range" id="radiusSlider" min="0.1" max="2.0" step="0.01">
+    <input type="range" id="radiusSlider" min="0" max="2.0" step="0.01" list="radiusTicks">
   </div>
 
   <!-- Phi -->
   <div class="slider-group">
     <div class="slider-header">
       <label for="phiSlider">Phi</label>
-      <input class="value-input" type="number" id="phiInput" min="${-Math.PI.toFixed(4)}" max="${Math.PI.toFixed(4)}" step="0.01">
+      <input class="value-input" type="number" id="phiInput" min="-3.1416" max="3.1416" step="0.01">
     </div>
-    <input type="range" id="phiSlider" min="${-Math.PI.toFixed(4)}" max="${Math.PI.toFixed(4)}" step="0.01">
+    <input type="range" id="phiSlider" min="-3.14" max="3.14" step="0.01" list="piTicks">
   </div>
 
   <!-- Theta -->
   <div class="slider-group">
     <div class="slider-header">
       <label for="thetaSlider">Theta</label>
-      <input class="value-input" type="number" id="thetaInput" min="${-Math.PI.toFixed(4)}" max="${Math.PI.toFixed(4)}" step="0.01">
+      <input class="value-input" type="number" id="thetaInput" min="-3.1416" max="3.1416" step="0.01">
     </div>
-    <input type="range" id="thetaSlider" min="${-Math.PI.toFixed(4)}" max="${Math.PI.toFixed(4)}" step="0.01">
+    <input type="range" id="thetaSlider" min="-3.14" max="3.14" step="0.01" list="piTicks">
   </div>
 </fieldset>
 `;

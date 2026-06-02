@@ -26,7 +26,30 @@
 
       --accent: #98971a;
       --accent-hover: #b8bb26;
+      --bg-slider: #5a5f2a;
       /* --border: #4a4f2a; */
+
+
+
+      --radius: 4px;
+      --font-sans: system-ui, -apple-system, sans-serif;
+      --font-mono: "Fira Code", ui-monospace, monospace;
+    }
+
+    :root.light {
+      --bg-main: #fbf1c7;
+      --bg-panel: #ebdbb2;
+      --bg-input: #f9f5d7;
+
+      --text-main: #3c3836;
+      --text-muted: #7c6f64;
+
+      --accent: #787700;
+      --accent-hover: #989b06;
+      --bg-slider: #787700;
+      /* --bg-slider: #c2c76a; */
+
+      --border: #d5c4a1;
 
 
       --radius: 4px;
@@ -44,8 +67,11 @@
       font-family: var(--font-sans);
       color: var(--text-main);
       height: 100vh;
-      overflow: hidden;
+      /* overflow: hidden; */
       /* Desktop app feel */
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
     }
 
     /* Layout */
@@ -145,6 +171,73 @@
       font-size: 0.95em;
     }
 
+    header,
+    footer {
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      padding: 0.25rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      border-bottom: none;
+      flex-direction: column;
+      text-align: center;
+      font-size: 0.75em;
+      padding: 0 1rem;
+      color: var(--text-muted);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+
+    header nav a {
+      margin-left: 1rem;
+      color: var(--text-main);
+      text-decoration: none;
+    }
+
+    header nav a:hover {
+      color: var(--accent-hover);
+    }
+
+    button {
+      background: var(--accent);
+      color: var(--bg-main);
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      /* cursor: pointer; */
+      transition: background 0.2s, color 0.2s;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    a:hover {
+      color: var(--accent-hover);
+      text-decoration: underline;
+    }
+
+
+    button:hover {
+      background: var(--accent-hover);
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
     /* Responsive Design */
     @media (max-width: 1100px) {
       body {
@@ -188,7 +281,71 @@
       }
     }
   </style>
+  <style>
+    .switch {
+      --switch-width: 52px;
+      --switch-height: 26px;
+      --knob-size: 22px;
+
+      position: relative;
+      width: var(--switch-width);
+      height: var(--switch-height);
+      background: var(--bg-slider);
+      border-radius: var(--switch-height);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .switch .icon {
+      width: 50%;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .switch .knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: var(--knob-size);
+      height: var(--knob-size);
+      background: var(--text-main);
+      border-radius: 50%;
+      transition: transform .25s ease;
+      pointer-events: none;
+    }
+
+    /* When light mode is active */
+    .light .switch {
+    }
+
+    .light .switch .knob {
+      transform: translateX(26px);
+    }
+  </style>
 </head>
+
+
+<header>
+  <h1>SDF Figure Editor</h1>
+  <nav>
+    <button id="theme-toggle" class="switch">
+      <span class="icon sun">🔆</span>
+      <span class="icon moon">🌙</span>
+      <span class="knob"></span>
+    </button>
+
+  </nav>
+</header>
+
+<script>
+  document.getElementById("theme-toggle").onclick = () => {
+    document.documentElement.classList.toggle("light");
+  };
+</script>
 
 <body>
   <div id="sdf">
@@ -219,5 +376,13 @@
     </div>
   </div>
 </body>
+
+<footer>
+  <p>
+    © 2026 Nikl174 — AGPLv3 License<br>
+    Source available on <a href="https://github.com/Nikl174/sdf-figure-editor">GitHub</a>
+  </p>
+</footer>
+
 
 </html>

@@ -63,7 +63,7 @@ template.innerHTML = `
     top: 16px;
     left: 16px;
     padding: 4px 10px;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--bg-input);
     color: var(--accent);
     font-family: var(--font-mono);
     font-size: 13px;
