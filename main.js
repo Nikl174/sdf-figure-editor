@@ -103,8 +103,8 @@ function createFigure() {
   });
   const pelvis = FigureNode.create({
     radius: 0.2,
-    phi: Math.PI,
-    theta: Math.PI,
+    phi: 0,
+    theta: 0,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
     smooth_min: 0.05,
