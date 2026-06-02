@@ -4,25 +4,58 @@
 <head>
   <meta charset="utf-8">
   <title>SDF Figure Editor</title>
-  <script src="components/SDFCanvas.js" type="module"></script>
-  <script src="components/FigureEditor.js" type="module"></script>
-  <script src="components/FigureNodeEditor.js" type="module"></script>
+  <script src="main.js" type="module"></script>
 
   <style>
-    body {
-      margin: 0;
-      background: rgba(6, 8, 10, 0.9);
-      font-family: sans-serif;
-      color: whitesmoke;
+    :root {
+      /* Theme Variables */
+      --bg-main: #0b0f19;
+      --bg-panel: #1a202c;
+      --bg-input: #000000;
+      --text-main: #e2e8f0;
+      --text-muted: #a0aec0;
+      --accent: #3182ce;
+      --accent-hover: #2b6cb0;
+      --border: #2d3748;
+      --radius: 6px;
+      --font-sans: system-ui, -apple-system, sans-serif;
+      --font-mono: "Fira Code", ui-monospace, monospace;
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg-main);
+      font-family: var(--font-sans);
+      color: var(--text-main);
+      height: 100vh;
+      overflow: hidden;
+      /* Desktop app feel */
+    }
+
+    /* Layout */
     #sdf {
       display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      height: 100vh;
+      flex-direction: row;
+      height: 100%;
       width: 100%;
-      
+    }
+
+    sdf-editor {
+      width: 320px;
+      flex-shrink: 0;
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border);
+    }
+
+    #sdf-half {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      min-width: 0;
     }
 
     sdf-canvas {
@@ -30,83 +63,149 @@
       min-width: 0;
     }
 
-    sdf-editor {
-      flex: 1;
-      min-width: 0;
-      overflow: auto;
-      resize: vertical;
-    }
-
-    /* Make canvas fill its container */
-    #sdf-view {
-      width: 100%;
-      height: 100%;
-    }
-
-    #sdf-half {
-      display: flex;
-      flex-direction: row;
-    }
-
     #settings {
-      flex: 0;
-      min-width: 20%;
-      align-items: stretch;
+      width: 300px;
+      flex-shrink: 0;
+      background: var(--bg-panel);
+      border-left: 1px solid var(--border);
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
-    /* Responsive: stack on small screens */
-    @media (max-width: 900px) {
+    /* Global UI Elements (applied to light DOM) */
+    fieldset {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin: 0;
+    }
 
-      /* #sdf { */
-      /*   flex-direction: column; */
-      /* } */
-      #settings {
-        flex: 0;
-        min-width: 20%;
-        align-items: stretch;
+    legend {
+      padding: 0 8px;
+      color: var(--text-muted);
+      font-size: 0.9em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .checkbox-group:last-child {
+      margin-bottom: 0;
+    }
+
+    input[type="checkbox"] {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg-input);
+      cursor: pointer;
+      position: relative;
+    }
+
+    input[type="checkbox"]:checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    input[type="checkbox"]:checked::after {
+      content: '✔';
+      position: absolute;
+      color: white;
+      font-size: 12px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    label {
+      cursor: pointer;
+      font-size: 0.95em;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1100px) {
+      body {
+        height: auto;
+        overflow: auto;
+        /* Enable scrolling on mobile */
+      }
+
+      #sdf,
+      #sdf-half {
+        flex-direction: column;
       }
 
       sdf-canvas {
         height: 50vh;
       }
 
+      #settings,
+      sdf-editor {
+        width: 100%;
+        border-right: none;
+        border-left: none;
+        border-top: 1px solid var(--border);
+      }
+
       sdf-editor {
         height: 50vh;
+      }
+
+      fieldset {
+        display: flex;
+      }
+
+      /* Stack order on mobile: Canvas, Settings, Editor */
+      #sdf-half {
+        order: 1;
+      }
+
+      sdf-editor {
+        order: 2;
       }
     }
   </style>
 </head>
 
 <body>
-
   <div id="sdf">
+    <sdf-editor id="sdf-editor"></sdf-editor>
+
     <div id="sdf-half">
-      <sdf-canvas id="sdf-view" width='400' height='400'></sdf-canvas>
+      <sdf-canvas id="sdf-view"></sdf-canvas>
+
       <div id="settings">
         <fieldset>
-          <legend>Settings</legend>
-          <div>
+          <legend>Global Settings</legend>
+          <div class="checkbox-group">
             <input type="checkbox" name="rotate" id="rotate">
             <label for="rotate">Rotate</label>
           </div>
-          <div>
+          <div class="checkbox-group">
             <input type="checkbox" name="animate" id="animate">
             <label for="animate">Animating</label>
           </div>
-          <div>
+          <div class="checkbox-group">
             <input type="checkbox" name="edit" id="edit">
             <label for="edit">Edit Figure</label>
           </div>
         </fieldset>
-        <figure-node-editor id="node-editor"></figure-node-editor>
 
+        <figure-node-editor id="node-editor"></figure-node-editor>
       </div>
     </div>
-    <sdf-editor id="sdf-editor"></sdf-editor>
   </div>
-
-  <script src="main.js" type="module"></script>
-
 </body>
 
 </html>

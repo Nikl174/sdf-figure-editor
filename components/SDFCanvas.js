@@ -6,6 +6,7 @@ import {
   initVerticeBufferRayMarching,
   rotatedPos,
 } from "../lib/utils.js";
+// TODO import templateHTML from "./template.html" assert { type: "text" };
 
 // TODO refactor
 
@@ -19,56 +20,65 @@ const NUM_OF_PARTS_NAME = "numOfPart";
 const template = document.createElement("template");
 template.innerHTML = `
 <style>
-.gl_container {
-  position: relative;
-}
+  :host {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-main);
+  }
 
-#sdf {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-}
-#view {
-  margin: auto;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  color: #0f0;
-}
+  #view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
 
-canvas {
-  display: block;
-  margin: 0 auto;
-}
+  p {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9em;
+    margin: 12px 0 0 0;
+  }
 
-button {
-  display: block;
-  margin: 0 auto;
-  font-size: 1em;
-}
+  .gl_container {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
 
-p {
-  text-align: center;
-}
+  canvas {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  }
 
-#fps {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  padding: 4px 8px;
-  background: rgba(0, 0, 0, 0.6);
-  color: #0f0;
-  font-family: monospace;
-  font-size: 14px;
-  border-radius: 4px;
-}
+  #fps {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    padding: 4px 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: bold;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    backdrop-filter: blur(4px);
+  }
 </style>
+
 <div id="view">
   <p>Click to move, Scroll while clicked to zoom</p>
   <div class="gl_container">
-    <canvas id="glCanvas" width="500" height="500" style="max-width:100%;height:auto;">
-    </canvas>
-    <div id="fps">FPS: —</div>
+    <canvas id="glCanvas" width="500" height="500"></canvas>
+    <div id="fps">FPS: ⏸</div>
   </div>
 </div>
 `;
@@ -115,7 +125,6 @@ export class SDFCanvas extends HTMLElement {
     {
       this.fpsDisplay = this.shadowRoot.getElementById("fps");
       if (!this.fpsDisplay) throw new Error("FPS display not found!");
-      this.fpsDisplay.textContent = "FPS: —";
       this.fps = 0;
       this.frameCount = 0; // frames accumulated in the current second
       this.lastTime = Date.now(); // timestamp of previous frame
@@ -317,6 +326,8 @@ export class SDFCanvas extends HTMLElement {
     }
     if (this.#animating) {
       globalThis.requestAnimationFrame(this._animateStep);
+    } else {
+      this.fpsDisplay.textContent = `FPS: ⏸`;
     }
   }
   /** @param {boolean} value new value starting the animation when true */

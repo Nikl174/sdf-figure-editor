@@ -2,18 +2,64 @@ const template = document.createElement("template");
 
 template.innerHTML = `
 <style>
-  .container {
+  :host {
+    display: block;
+    width: 100%;
+  }
+
+  fieldset {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 0;
     display: flex;
     flex-direction: column;
-    padding: 10px;
-    margin: 5px 0;
+    gap: 16px;
+  }
+
+  legend {
+    padding: 0 8px;
+    color: var(--text-muted);
+    font-size: 0.9em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .switcher {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4px;
+  }
+
+  .switcher button {
+    background: transparent;
+    color: var(--text-main);
+    border: none;
+    padding: 6px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+  }
+
+  .switcher button:hover {
+    background: var(--border);
+  }
+
+  #itemDisplay {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
   }
 
   .slider-group {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    margin-bottom: 12px;
+    gap: 8px;
   }
 
   .slider-header {
@@ -24,116 +70,68 @@ template.innerHTML = `
 
   .slider-header label {
     font-size: 0.9em;
+    color: var(--text-muted);
   }
 
   .value-input {
-    width: 80px;
-    padding: 2px 4px;
+    width: 70px;
+    padding: 4px 6px;
+    background: var(--bg-input);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    text-align: right;
   }
 
-  input[type=range] {
+  .value-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  input[type="range"] {
     width: 100%;
-  }
-
-  .switcher {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .switcher * {
-    flex: 1;
-    margin: 0.5em;
-  }
-
-  #itemDisplay {
-    text-align: center;
+    margin: 0;
+    accent-color: var(--accent);
+    cursor: pointer;
   }
 </style>
 
-<fieldset class="container">
-  <legend>Edit Figure Part</legend>
+<fieldset>
+  <legend>Edit Part</legend>
 
   <div class="switcher">
-    <button id="prevBtn"><</button>
-
-    <div id="itemDisplay">
-      1 / 1
-    </div>
-
-    <button id="nextBtn">></button>
+    <button id="prevBtn">&lt;</button>
+    <div id="itemDisplay">1 / 1</div>
+    <button id="nextBtn">&gt;</button>
   </div>
 
   <!-- Radius -->
   <div class="slider-group">
     <div class="slider-header">
       <label for="radiusSlider">Radius</label>
-
-      <input
-        class="value-input"
-        type="number"
-        id="radiusInput"
-        min="0.1"
-        max="2.0"
-        step="0.01"
-      >
+      <input class="value-input" type="number" id="radiusInput" min="0.1" max="2.0" step="0.01">
     </div>
-
-    <input
-      type="range"
-      id="radiusSlider"
-      min="0.1"
-      max="2.0"
-      step="0.01"
-    >
+    <input type="range" id="radiusSlider" min="0.1" max="2.0" step="0.01">
   </div>
 
   <!-- Phi -->
   <div class="slider-group">
     <div class="slider-header">
       <label for="phiSlider">Phi</label>
-
-      <input
-        class="value-input"
-        type="number"
-        id="phiInput"
-        min="${-Math.PI.toFixed(4)}"
-        max="${Math.PI.toFixed(4)}"
-        step="0.01"
-      >
+      <input class="value-input" type="number" id="phiInput" min="${-Math.PI.toFixed(4)}" max="${Math.PI.toFixed(4)}" step="0.01">
     </div>
-
-    <input
-      type="range"
-      id="phiSlider"
-      min="${-Math.PI.toFixed(4)}"
-      max="${Math.PI.toFixed(4)}"
-      step="0.01"
-    >
+    <input type="range" id="phiSlider" min="${-Math.PI.toFixed(4)}" max="${Math.PI.toFixed(4)}" step="0.01">
   </div>
 
   <!-- Theta -->
   <div class="slider-group">
     <div class="slider-header">
       <label for="thetaSlider">Theta</label>
-
-      <input
-        class="value-input"
-        type="number"
-        id="thetaInput"
-        min="${-Math.PI.toFixed(4)}"
-        max="${Math.PI.toFixed(4)}"
-        step="0.01"
-      >
+      <input class="value-input" type="number" id="thetaInput" min="${-Math.PI.toFixed(4)}" max="${Math.PI.toFixed(4)}" step="0.01">
     </div>
-
-    <input
-      type="range"
-      id="thetaSlider"
-      min="${-Math.PI.toFixed(4)}"
-      max="${Math.PI.toFixed(4)}"
-      step="0.01"
-    >
+    <input type="range" id="thetaSlider" min="${-Math.PI.toFixed(4)}" max="${Math.PI.toFixed(4)}" step="0.01">
   </div>
 </fieldset>
 `;
@@ -256,7 +254,6 @@ export class FigureNodeEditor extends HTMLElement {
 
   emitValueChange(property, value) {
     const numericValue = parseFloat(value);
-
 
     // Emit event
     this.dispatchEvent(

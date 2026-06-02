@@ -9,20 +9,74 @@
 
 const template = document.createElement("template");
 template.innerHTML = `
-    <style>
-    #editor {
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      justify-items: stretch;
-      margin: auto;
-      padding: 2he;
-    }
-    </style>
-    <div id="editor">
-      <textarea name="figure_in" id="figure_in" rows="20" cols="30"></textarea>
-      <button id="update" type="button">Update figure</button>
-    </div>
+<style>
+  :host {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+  }
+
+  #editor {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1rem;
+    gap: 12px;
+  }
+
+  label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  textarea {
+    flex: 1;
+    width: 100%;
+    min-height: 200px;
+    box-sizing: border-box;
+    padding: 12px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.5;
+    background: var(--bg-input);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    resize: none;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  button:hover {
+    background: var(--accent-hover);
+  }
+</style>
+
+<div id="editor">
+  <label for="figure_in">Current Figure</label>
+  <textarea name="figure_in" id="figure_in" spellcheck="false"></textarea>
+  <button id="update" type="button">Update Figure</button>
+</div>
 `;
 
 export class SDFEditor extends HTMLElement {
@@ -78,7 +132,6 @@ export class SDFEditor extends HTMLElement {
 
       this.#updateBtn = updateBtn;
       this.#textArea = textArea;
-
     }
   }
   connectedCallback() {
@@ -106,7 +159,6 @@ export class SDFEditor extends HTMLElement {
   set figureText(value) {
     this.#textArea.innerHTML = value;
   }
-
   get figureText() {
     return this.#textArea.value;
   }
