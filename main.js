@@ -28,6 +28,13 @@ let dragging = false;
 let rotating = false;
 
 const fig_pos = vec3.fromValues(0, 0, 0);
+// const identity = mat3.create();
+// deno-fmt-ignore
+const identity = mat3.fromValues(
+      0, 0, 1,
+      1, 0, 0,
+      0, 1, 0,
+    );
 
 /** @type {[FigureNode]} */
 const fig_component_list = [];
@@ -184,7 +191,7 @@ function createFigure() {
   const lowerLeg_right = FigureNode.create({
     radius: 1.2,
     phi: 0,
-    theta: -Math.PI / 8,
+    theta: 0,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
     smooth_min: 0.05,
@@ -194,7 +201,7 @@ function createFigure() {
   const lowerLeg_left = FigureNode.create({
     radius: 1.2,
     phi: 0,
-    theta: Math.PI / 8,
+    theta: 0,
   }, {
     sdf: SDF_PRIMITIES.SDF_CAPSULE,
     smooth_min: 0.05,
@@ -328,7 +335,6 @@ function main() {
   // figure handling
   // ---------
   figure = createFigure();
-  const identity = mat3.create();
   const figure_list = figure.transformToList(fig_pos, identity);
   canvas.figure = convertFigureListToSDFPart(figure_list);
   editor.figureText = JSON.stringify(figure);
