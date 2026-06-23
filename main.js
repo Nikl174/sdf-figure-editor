@@ -1,4 +1,8 @@
-import { computeCameraPosition, rotatedPos } from "./lib/utils.js";
+import {
+  computeCameraPosition,
+  mat3Rotation,
+  rotatedPos,
+} from "./lib/utils.js";
 import { SDFCanvas } from "./components/SDFCanvas.js";
 import { SDFEditor } from "./components/FigureEditor.js";
 import { FigureNodeEditor } from "./components/FigureNodeEditor.js";
@@ -12,7 +16,6 @@ import { mat3, vec3 } from "./lib/matrix.js";
  */
 
 const CAM_ROT_INC_RAD = -0.040;
-let X_INC = 0.010;
 // horizontal angle
 const CAM_THETA = 0;
 // vertical angle (avoid 0 or π)
@@ -36,7 +39,8 @@ const identity = mat3.fromValues(
       0, 1, 0,
     );
 
-/** @type {[FigureNode]} */
+/** @typedef {[{name: string, node: FigureNode}]} ComponentList */
+/** @type {ComponentList} */
 const fig_component_list = [];
 let current_figure_id = 0;
 
@@ -209,17 +213,17 @@ function createFigure() {
     extra_param: [0.25, 0.0, 0.0],
   });
 
-  fig_component_list.push(head);
-  fig_component_list.push(body);
-  fig_component_list.push(upperArm_right);
-  fig_component_list.push(lowerArm_right);
-  fig_component_list.push(upperArm_left);
-  fig_component_list.push(lowerArm_left);
-  fig_component_list.push(pelvis);
-  fig_component_list.push(upperLeg_right);
-  fig_component_list.push(lowerLeg_right);
-  fig_component_list.push(upperArm_right);
-  fig_component_list.push(lowerArm_right);
+  fig_component_list.push({ name: "body", node: body });
+  fig_component_list.push({ name: "pelvis", node: pelvis });
+  fig_component_list.push({ name: "head", node: head });
+  fig_component_list.push({ name: "upperArm_right", node: upperArm_right });
+  fig_component_list.push({ name: "lowerArm_right", node: lowerArm_right });
+  fig_component_list.push({ name: "upperArm_left", node: upperArm_left });
+  fig_component_list.push({ name: "lowerArm_left", node: lowerArm_left });
+  fig_component_list.push({ name: "upperLeg_right", node: upperLeg_right });
+  fig_component_list.push({ name: "lowerLeg_right", node: lowerLeg_right });
+  fig_component_list.push({ name: "upperLeg_left", node: upperLeg_left });
+  fig_component_list.push({ name: "lowerLeg_left", node: lowerLeg_left });
   body.addChild(head, 1.5);
   body.addChild(pelvis, 0);
   body.addChild(upperArm_left, 1);
@@ -236,12 +240,12 @@ function createFigure() {
 
 /** @brief update the visual values inside of the editor
  * @param {FigureNodeEditor} editor the node editor
- * @param {[FigureNode]} nodes the list of nodes from which one is selected
+ * @param {ComponentList} nodes the list of nodes from which one is selected
  * @param {Number} index index of the selected node
  */
 function updateNodeEditor(editor, nodes, index) {
-  editor.setSelection(index, nodes.length - 1);
-  editor.setValues(nodes[index].vector);
+  editor.setSelection(index, nodes.length, nodes[index].name);
+  editor.setValues(nodes[index].node.vector);
 }
 
 function main() {
@@ -257,10 +261,10 @@ function main() {
 
   // Mouse interaction callbacks TODO
   // ---------
-  canvas.canvas.addEventListener("mousedown", async (e) => {
+  canvas.canvas.addEventListener("mousedown", (e) => {
     if (e.buttons == 1) {
       dragging = true;
-      await e.currentTarget.requestPointerLock();
+      canvas.requestPointerLock();
     }
   });
   canvas.canvas.addEventListener("mouseup", (e) => {
@@ -321,12 +325,11 @@ function main() {
     }
   });
   node_editor.addEventListener("value-change", (event) => {
-    const node = fig_component_list[current_figure_id];
+    const node = fig_component_list[current_figure_id].node;
     const vec = node.vector;
     vec[event.detail.property] = event.detail.value;
     node.vector = vec;
 
-    const identity = mat3.create();
     const figure_list = figure.transformToList(fig_pos, identity);
     canvas.figure = convertFigureListToSDFPart(figure_list);
   });

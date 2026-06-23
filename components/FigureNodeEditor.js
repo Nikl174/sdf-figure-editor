@@ -164,6 +164,7 @@ export class FigureNodeEditor extends HTMLElement {
 
     this.selectedIndex = 0;
     this.totalItems = 0;
+    this.partName = "PartName";
   }
 
   connectedCallback() {
@@ -298,17 +299,18 @@ export class FigureNodeEditor extends HTMLElement {
     this.thetaInput.value = theta;
   }
 
-  setSelection(index, total) {
+  setSelection(index, total, name) {
     this.selectedIndex = index;
     this.totalItems = total;
+    this.partName = name;
 
     this._render();
   }
 
   _render() {
-    this.itemDisplay.textContent = `${
-      this.selectedIndex + 1
-    } / ${this.totalItems}`;
+    this.itemDisplay.textContent = `
+    ${this.partName} 
+    [${this.selectedIndex + 1}/${this.totalItems}]`;
 
     this.prevBtn.disabled = this.selectedIndex <= 0;
     this.nextBtn.disabled = this.selectedIndex >= this.totalItems - 1;
