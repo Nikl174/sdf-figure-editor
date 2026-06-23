@@ -34,8 +34,8 @@ const fig_pos = vec3.fromValues(0, 0, 0);
 // const identity = mat3.create();
 // deno-fmt-ignore
 const identity = mat3.fromValues(
-      0, 0, 1,
       1, 0, 0,
+      0, 0, 1,
       0, 1, 0,
     );
 
