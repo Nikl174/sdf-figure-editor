@@ -262,29 +262,39 @@ function main() {
   // Mouse interaction callbacks TODO
   // ---------
   canvas.canvas.addEventListener("mousedown", (e) => {
-    if (e.buttons == 1) {
-      dragging = true;
+    if (e.button === 0 && e.buttons > 0) {
       canvas.requestPointerLock();
     }
   });
-  canvas.canvas.addEventListener("mouseup", (e) => {
-    dragging = false;
-    document.exitPointerLock();
+  document.addEventListener("pointerlockchange", () => {
+    dragging = document.pointerLockElement === canvas;
+  });
+
+  document.addEventListener("mouseup", (e) => {
+    if (e.button === 0 && dragging) {
+      document.exitPointerLock();
+    }
   });
   canvas.canvas.addEventListener("wheel", (e) => {
+    e.preventDefault();
     radius += e.deltaY * 0.01;
     radius = Math.max(1, Math.min(20, radius));
-  });
-  canvas.canvas.addEventListener("mousemove", (e) => {
+  }, { passive: false });
+  document.addEventListener("wheel", (e) => {
+    if (!dragging) return;
+
+    e.preventDefault();
+    radius += e.deltaY * 0.01;
+    radius = Math.max(1, Math.min(20, radius));
+  }, { passive: false });
+
+  document.addEventListener("mousemove", (e) => {
     // left mouse button pressed
-    if (dragging) {
-      const dx = e.movementX;
-      const dy = e.movementY;
-      theta += dy * 0.01;
-      phi += -dx * 0.01; // Clamp phi to avoid flipping
-      const eps = 0.1;
-      phi = Math.max(eps, Math.min(Math.PI - eps, phi));
-    }
+    if (!dragging) return;
+    theta += -e.movementY * 0.01;
+    phi += -e.movementX * 0.01; // Clamp phi to avoid flipping
+    // const eps = 0.1;
+    // phi = Math.max(eps, Math.min(Math.PI - eps, phi));
   });
   // ---------
 
