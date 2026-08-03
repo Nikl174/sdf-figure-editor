@@ -275,26 +275,29 @@ function main() {
       document.exitPointerLock();
     }
   });
+
   canvas.canvas.addEventListener("wheel", (e) => {
     e.preventDefault();
     radius += e.deltaY * 0.01;
     radius = Math.max(1, Math.min(20, radius));
+    canvas.updateSceneRender();
   }, { passive: false });
+
   document.addEventListener("wheel", (e) => {
     if (!dragging) return;
 
     e.preventDefault();
     radius += e.deltaY * 0.01;
     radius = Math.max(1, Math.min(20, radius));
+    canvas.updateSceneRender();
   }, { passive: false });
 
   document.addEventListener("mousemove", (e) => {
-    // left mouse button pressed
     if (!dragging) return;
+
     theta += -e.movementY * 0.01;
     phi += -e.movementX * 0.01; // Clamp phi to avoid flipping
-    // const eps = 0.1;
-    // phi = Math.max(eps, Math.min(Math.PI - eps, phi));
+    canvas.updateSceneRender();
   });
   // ---------
 
@@ -342,6 +345,7 @@ function main() {
 
     const figure_list = figure.transformToList(fig_pos, identity);
     canvas.figure = convertFigureListToSDFPart(figure_list);
+    editor.figureText = JSON.stringify(figure);
   });
   // ---------
 

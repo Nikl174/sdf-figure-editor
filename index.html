@@ -140,6 +140,25 @@
       margin-bottom: 0;
     }
 
+    .value-input[type="number"] {
+      -webkit-appearance: none;
+      -moz-appearance: textfield;
+      width: 50px;
+      padding: 4px 6px;
+      background: var(--bg-input);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      text-align: right;
+    }
+
+    .value-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
     input[type="checkbox"] {
       appearance: none;
       width: 18px;
@@ -229,7 +248,6 @@
       text-decoration: underline;
     }
 
-
     button:hover {
       background: var(--accent-hover);
     }
@@ -281,6 +299,7 @@
       }
     }
   </style>
+
   <style>
     .switch {
       --switch-width: 52px;
@@ -319,8 +338,7 @@
     }
 
     /* When light mode is active */
-    .light .switch {
-    }
+    .light .switch {}
 
     .light .switch .knob {
       transform: translateX(26px);
@@ -352,11 +370,17 @@
     <sdf-editor id="sdf-editor"></sdf-editor>
 
     <div id="sdf-half">
-      <sdf-canvas id="sdf-view"></sdf-canvas>
+      <sdf-canvas id="sdf-view" width="500" height="500"></sdf-canvas>
 
       <div id="settings">
         <fieldset>
           <legend>Global Settings</legend>
+          <div class="checkbox-group">
+            <input class="value-input" type="number" name="width" id="width">
+            x
+            <input class="value-input" type="number" name="height" id="height">
+            <label style="margin-left: 0.5rem">Resolution</label>
+          </div>
           <div class="checkbox-group">
             <input type="checkbox" name="rotate" id="rotate">
             <label for="rotate">Rotate</label>

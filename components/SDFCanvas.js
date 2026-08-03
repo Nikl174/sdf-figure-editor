@@ -111,6 +111,7 @@ export class SDFCanvas extends HTMLElement {
   #vs_req;
   #figure;
   #animating;
+  schedule;
 
   /** @brief Initialise basic variables and structures necessary for it to work */
   constructor() {
@@ -120,6 +121,7 @@ export class SDFCanvas extends HTMLElement {
       throw new Error("Could not attach ShadowDOM to SDFCanvas!");
     }
     this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.schedule = false;
 
     // FPS display TODO
     {
@@ -276,13 +278,7 @@ export class SDFCanvas extends HTMLElement {
       SDFCanvas.LIGHT_POSITION,
     ); // it is a 4d-vector (x,y,z)
 
-    updateFigureBuffer(this.#gl, this.#shader_program, this.#figure);
-    // Tell WebGL to use our program when drawing
-    {
-      const offset = 0;
-      const vertexCount = 4;
-      this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, offset, vertexCount);
-    }
+    this.updateSceneRender();
   }
   /** TODO
    * @brief Updates the FPS display text, should be called every frame
@@ -304,6 +300,16 @@ export class SDFCanvas extends HTMLElement {
   }
   /** @brief main animation loop function for requestAnimationFrame */
   _animateStep() {
+    this.updateSceneRender();
+
+    if (this.#animating) {
+      this.updateFps(SDFCanvas.FPS_INTERVAL);
+      globalThis.requestAnimationFrame(this._animateStep);
+    } else {
+      this.fpsDisplay.textContent = `FPS: ⏸`;
+    }
+  }
+  updateSceneRender() {
     if (this.animateCallback) this.animateCallback(this.#animVars);
 
     if (this.#animVars) {
@@ -316,19 +322,19 @@ export class SDFCanvas extends HTMLElement {
       this.customAnimValues = this.#animVars.custom;
     }
 
-    // update scene
-    {
-      const offset = 0;
-      const vertexCount = 4;
-      this.updateFps(SDFCanvas.FPS_INTERVAL);
-      updateFigureBuffer(this.#gl, this.#shader_program, this.#figure);
-      this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, offset, vertexCount);
-    }
-    if (this.#animating) {
-      globalThis.requestAnimationFrame(this._animateStep);
-    } else {
-      this.fpsDisplay.textContent = `FPS: ⏸`;
-    }
+    // to not have to many concurrent requests, schedule them
+    if (this.schedule) return;
+    this.schedule = true;
+
+    globalThis.requestAnimationFrame(
+      () => {
+        this.schedule = false;
+        const offset = 0;
+        const vertexCount = 4;
+        updateFigureBuffer(this.#gl, this.#shader_program, this.#figure);
+        this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, offset, vertexCount);
+      },
+    );
   }
   /** @param {boolean} value new value starting the animation when true */
   set animating(value) {
@@ -347,12 +353,7 @@ export class SDFCanvas extends HTMLElement {
     // TODO necessary? + await for shader_program!
     if (this.#shader_program != null) {
       this._updateNumOfParts();
-      updateFigureBuffer(this.#gl, this.#shader_program, this.#figure);
-      {
-        const offset = 0;
-        const vertexCount = 4;
-        this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, offset, vertexCount);
-      }
+      this.updateSceneRender();
     }
   }
   /** @brief return current figure constructed of SDFPart */
