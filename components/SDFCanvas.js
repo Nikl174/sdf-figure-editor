@@ -112,6 +112,8 @@ export class SDFCanvas extends HTMLElement {
   #figure;
   #animating;
   schedule;
+  #width;
+  #height;
 
   /** @brief Initialise basic variables and structures necessary for it to work */
   constructor() {
@@ -138,18 +140,12 @@ export class SDFCanvas extends HTMLElement {
       // Initialise GL context with transparent background
       console.log(this);
 
-      let width = SDFCanvas.WIDTH;
-      let height = SDFCanvas.HEIGHT;
       let frag = SDFCanvas.FRAG_SHADER_PATH;
       let vert = SDFCanvas.VERT_SHADER_PATH;
+      this.#width = SDFCanvas.WIDTH;
+      this.#height = SDFCanvas.HEIGHT;
 
       // Parameter from HTML
-      if (this.hasAttribute("width")) {
-        width = Number(this.getAttribute("width"));
-      }
-      if (this.hasAttribute("height")) {
-        height = Number(this.getAttribute("height"));
-      }
       if (this.hasAttribute("frag_shader_link")) {
         frag = String(this.getAttribute("frag_shader_link"));
       }
@@ -162,10 +158,8 @@ export class SDFCanvas extends HTMLElement {
           "glCanvas",
         ));
       if (!this.canvas) throw new Error("WebGL Canvas not found!");
-      this.canvas.width = width;
-      this.canvas.height = height;
       const gl = this.canvas.getContext("webgl2", {
-        preserveDrawingBuffer: true,
+        // preserveDrawingBuffer: true,
         alpha: true,
       });
 
@@ -215,6 +209,7 @@ export class SDFCanvas extends HTMLElement {
       };
     }
   }
+
   /** @brief When the element is actually attached to DOM, this starts the actual render, getting the shader files, compiling it and starting an animation
    */
   async connectedCallback() {
@@ -252,8 +247,21 @@ export class SDFCanvas extends HTMLElement {
     this.#vars_loc = getVariableLocations(this.#gl, this.#shader_program, [
       "camPos",
       "lightPos",
+      "width",
+      "height",
     ]);
     updateFigureBuffer(this.#gl, this.#shader_program, this.#figure);
+    // TODO
+    let width = SDFCanvas.WIDTH;
+    let height = SDFCanvas.HEIGHT;
+    if (this.hasAttribute("width")) {
+      width = Number(this.getAttribute("width"));
+    }
+    if (this.hasAttribute("height")) {
+      height = Number(this.getAttribute("height"));
+    }
+    this.width = width;
+    this.height = height;
     this.#drawScene();
     if (this.animating) this._animateStep();
   }
@@ -272,11 +280,22 @@ export class SDFCanvas extends HTMLElement {
     this.#gl.useProgram(this.#shader_program);
 
     // TODO
-    this.#gl.uniform3fv(this.#vars_loc.get("camPos"), SDFCanvas.CAM_POSITION); // it is a 3d-vector (x,y,z)
+    this.#gl.uniform3fv(
+      this.#vars_loc.get("camPos"),
+      SDFCanvas.CAM_POSITION,
+    ); // 3d-vector (x,y,z)
     this.#gl.uniform3fv(
       this.#vars_loc.get("lightPos"),
       SDFCanvas.LIGHT_POSITION,
-    ); // it is a 4d-vector (x,y,z)
+    ); // 3d-vector (x,y,z)
+    this.#gl.uniform1i(
+      this.#vars_loc.get("width"),
+      SDFCanvas.WIDTH,
+    ); // int
+    this.#gl.uniform1i(
+      this.#vars_loc.get("height"),
+      SDFCanvas.HEIGHT,
+    ); // int
 
     this.updateSceneRender();
   }
@@ -359,6 +378,43 @@ export class SDFCanvas extends HTMLElement {
   /** @brief return current figure constructed of SDFPart */
   get figure() {
     return this.#figure;
+  }
+  set width(value) {
+    // TODO
+    this.#width = value;
+    this.canvas.width = value;
+    // TODO
+    this.#gl.uniform1i(
+      this.#vars_loc.get("width"),
+      value,
+    );
+    this.#gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+    // this.#gl.clearColor(0.0, 0.0, 0.0, 0.0); // Clear to black, fully opaque
+    // this.#gl.clearDepth(1.0); // Clear everything
+    // this.#gl.clear(this.#gl.COLOR_BUFFER_BIT | this.#gl.DEPTH_BUFFER_BIT);
+  }
+  get width() {
+    // TODO
+    return this.#width;
+  }
+  set height(value) {
+    // TODO
+    this.#height = value;
+    this.canvas.height = value;
+
+    // TODO
+    this.#gl.uniform1i(
+      this.#vars_loc.get("height"),
+      value,
+    );
+    this.#gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+    // this.#gl.clearColor(0.0, 0.0, 0.0, 0.0); // Clear to black, fully opaque
+    // this.#gl.clearDepth(1.0); // Clear everything
+    // this.#gl.clear(this.#gl.COLOR_BUFFER_BIT | this.#gl.DEPTH_BUFFER_BIT);
+  }
+  get height() {
+    // TODO
+    return this.#height;
   }
 
   /**

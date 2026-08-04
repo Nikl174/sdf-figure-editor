@@ -303,6 +303,7 @@ function main() {
 
   // Settings
   // ---------
+  // TODO TODO
   const rotate_box = /** @type {HTMLInputElement|null}*/ (document
     .getElementById("rotate"));
   rotating = rotate_box.checked;
@@ -311,10 +312,24 @@ function main() {
   canvas.animating = animate_box.checked;
   const edit_figure_box = /** @type {HTMLInputElement|null}*/ (document
     .getElementById("edit"));
+  const resolution_width_box = /** @type {HTMLInputElement|null}*/ (document
+    .getElementById("width"));
+  const resolution_height_box = /** @type {HTMLInputElement|null}*/ (document
+    .getElementById("height"));
   const node_editor = /** @type {FigureNodeEditor|null}*/ (document
     .getElementById("node-editor"));
   node_editor.style.display = edit_figure_box.checked ? "block" : "none";
 
+  resolution_height_box.value = canvas.height;
+  resolution_width_box.value = canvas.width;
+  resolution_height_box.addEventListener("focusout", (event) => {
+    // console.log(event.target);
+    canvas.height = event.target.valueAsNumber;
+  });
+  resolution_width_box.addEventListener("focusout", (event) => {
+    // console.log(event.target);
+    canvas.width = event.target.valueAsNumber;
+  });
   animate_box?.addEventListener("change", (event) => {
     canvas.animating = event.target.checked;
   });
