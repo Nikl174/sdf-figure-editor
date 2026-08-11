@@ -17,11 +17,11 @@ import { mat3, vec3 } from "./lib/matrix.js";
 
 const CAM_ROT_INC_RAD = -0.040;
 // horizontal angle
-const CAM_THETA = 0;
+const CAM_THETA = Math.PI / 2;
 // vertical angle (avoid 0 or π)
-const CAM_PHI = 2;
+const CAM_PHI = Math.PI / 2;
 // radius from camera to [0,0,0]
-const CAM_RADIUS = 10;
+const CAM_RADIUS = 12;
 
 // camera movement TODO
 let radius = CAM_RADIUS;
@@ -54,14 +54,16 @@ function animate(animVars) {
     animVars.custom.set("camRotRad", 0);
     camRotRad = 0;
   }
-  if (dragging) {
-    animVars.camPos = computeCameraPosition(
-      [0, 0, 0],
-      radius,
-      phi,
-      theta,
-    );
-  } else if (rotating) {
+  // if (dragging) {
+  // TODO
+  animVars.camPos = computeCameraPosition(
+    [0, 0, 0],
+    radius,
+    phi,
+    theta,
+  );
+  // } else
+  if (rotating && !dragging) {
     animVars.camPos = rotatedPos(radius, camRotRad, animVars.camPos[1]);
     camRotRad += CAM_ROT_INC_RAD;
   }
@@ -248,7 +250,7 @@ function updateNodeEditor(editor, nodes, index) {
   editor.setValues(nodes[index].node.vector);
 }
 
-function main() {
+async function main() {
   const canvas =
     /** @type {SDFCanvas|null} */ (document.getElementById("sdf-view"));
   const editor =
@@ -257,6 +259,7 @@ function main() {
   if (!canvas || !editor) {
     throw new Error("Canvas or editor not found in document!");
   }
+  await canvas.whenReady();
   canvas.animateCallback = animate;
 
   // Mouse interaction callbacks TODO
@@ -281,6 +284,8 @@ function main() {
     radius += e.deltaY * 0.01;
     radius = Math.max(1, Math.min(20, radius));
     canvas.updateSceneRender();
+
+    // TODO??
   }, { passive: false });
 
   document.addEventListener("wheel", (e) => {
@@ -320,8 +325,8 @@ function main() {
     .getElementById("node-editor"));
   node_editor.style.display = edit_figure_box.checked ? "block" : "none";
 
-  resolution_height_box.value = canvas.height;
-  resolution_width_box.value = canvas.width;
+  canvas.height = resolution_height_box.valueAsNumber;
+  canvas.width = resolution_width_box.valueAsNumber;
   resolution_height_box.addEventListener("focusout", (event) => {
     // console.log(event.target);
     canvas.height = event.target.valueAsNumber;

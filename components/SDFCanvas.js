@@ -112,18 +112,60 @@ export class SDFCanvas extends HTMLElement {
   #figure;
   #animating;
   schedule;
+  #readyPromise;
   #width;
   #height;
 
+  async initialise() {
+    //  get the fragmentShader from a glsl file
+    this.fs_src = await fetch(this.#fs_req).then((response) => {
+      if (response.ok) {
+        return response.text();
+      } else {
+        throw new Error(
+          "HTTP error, couldn't retreive frag_shader.glsl! Status: ${response.status}",
+        );
+      }
+    });
+    //  get the vertexShader from a glsl file
+    this.vs_src = await fetch(this.#vs_req).then((response) => {
+      if (response.ok) {
+        // console.log(response.text())
+        return response.text();
+      } else {
+        throw new Error(
+          "HTTP error, couldn't retreive vert_shader.glsl! Status: ${response.status}",
+        );
+      }
+    });
+    // shader programm and animation loop
+    this.#shader_program = initShaderProgram(
+      this.#gl,
+      this.vs_src,
+      this.fs_src,
+    );
+    // prepare vertices for Ray Marching Window
+    initVerticeBufferRayMarching(this.#gl);
+
+    this.#vars_loc = getVariableLocations(this.#gl, this.#shader_program, [
+      "camPos",
+      "lightPos",
+      "width",
+      "height",
+    ]);
+
+    updateFigureBuffer(this.#gl, this.#shader_program, this.#figure);
+  }
+
   /** @brief Initialise basic variables and structures necessary for it to work */
   constructor() {
+    // WebComponent initialisation
     super();
     this.attachShadow({ mode: "open" });
     if (!this.shadowRoot) {
       throw new Error("Could not attach ShadowDOM to SDFCanvas!");
     }
     this.shadowRoot.appendChild(template.content.cloneNode(true));
-    this.schedule = false;
 
     // FPS display TODO
     {
@@ -132,26 +174,32 @@ export class SDFCanvas extends HTMLElement {
       this.fps = 0;
       this.frameCount = 0; // frames accumulated in the current second
       this.lastTime = Date.now(); // timestamp of previous frame
-      // shadowRoot.appendChild(this.fpsDisplay);
     }
 
     // WebGL
     {
       // Initialise GL context with transparent background
-      console.log(this);
 
       let frag = SDFCanvas.FRAG_SHADER_PATH;
       let vert = SDFCanvas.VERT_SHADER_PATH;
-      this.#width = SDFCanvas.WIDTH;
-      this.#height = SDFCanvas.HEIGHT;
+      let width = SDFCanvas.WIDTH;
+      let height = SDFCanvas.HEIGHT;
 
       // Parameter from HTML
+      if (this.hasAttribute("width")) {
+        width = Number(this.getAttribute("width"));
+      }
+      if (this.hasAttribute("height")) {
+        height = Number(this.getAttribute("height"));
+      }
       if (this.hasAttribute("frag_shader_link")) {
         frag = String(this.getAttribute("frag_shader_link"));
       }
       if (this.hasAttribute("vert_shader_link")) {
         vert = String(this.getAttribute("vert_shader_link"));
       }
+      this.#width = width;
+      this.#height = height;
 
       this.canvas =
         /** @type {HTMLCanvasElement | null} */ (this.shadowRoot.getElementById(
@@ -183,9 +231,7 @@ export class SDFCanvas extends HTMLElement {
     }
 
     // SDF figure
-    {
-      this.#figure = SDFCanvas.SDF_FIGURE;
-    }
+    this.#figure = SDFCanvas.SDF_FIGURE;
 
     // animation
     // bind the currently constructed object to the function so it can use its properties/functions
@@ -200,6 +246,7 @@ export class SDFCanvas extends HTMLElement {
        * @type {(function(AnimVars): void) | null}
        */
       this.animateCallback = null;
+      this.schedule = false;
       this.#animating = false;
       this.#animVars = {
         camPos: SDFCanvas.CAM_POSITION,
@@ -207,61 +254,22 @@ export class SDFCanvas extends HTMLElement {
         figure: this.figure,
         custom: new Map(),
       };
+
+      this.#readyPromise = this.initialise();
     }
+  }
+
+  /** @brief Returns when initialisation is ready
+    */
+  async whenReady() {
+    await this.#readyPromise;
   }
 
   /** @brief When the element is actually attached to DOM, this starts the actual render, getting the shader files, compiling it and starting an animation
    */
-  async connectedCallback() {
-    console.log(this);
-    //  get the fragmentShader from a glsl file
-    this.fs_src = await fetch(this.#fs_req).then((response) => {
-      if (response.ok) {
-        return response.text();
-      } else {
-        throw new Error(
-          "HTTP error, couldn't retreive frag_shader.glsl! Status: ${response.status}",
-        );
-      }
-    });
-    //  get the vertexShader from a glsl file
-    this.vs_src = await fetch(this.#vs_req).then((response) => {
-      if (response.ok) {
-        // console.log(response.text())
-        return response.text();
-      } else {
-        throw new Error(
-          "HTTP error, couldn't retreive vert_shader.glsl! Status: ${response.status}",
-        );
-      }
-    });
-
-    // shader programm and animation loop
-    this.#shader_program = initShaderProgram(
-      this.#gl,
-      this.vs_src,
-      this.fs_src,
-    );
-    initVerticeBufferRayMarching(this.#gl);
-    //TODO
-    this.#vars_loc = getVariableLocations(this.#gl, this.#shader_program, [
-      "camPos",
-      "lightPos",
-      "width",
-      "height",
-    ]);
-    updateFigureBuffer(this.#gl, this.#shader_program, this.#figure);
-    // TODO
-    let width = SDFCanvas.WIDTH;
-    let height = SDFCanvas.HEIGHT;
-    if (this.hasAttribute("width")) {
-      width = Number(this.getAttribute("width"));
-    }
-    if (this.hasAttribute("height")) {
-      height = Number(this.getAttribute("height"));
-    }
-    this.width = width;
-    this.height = height;
+  connectedCallback() {
+    this.width = this.#width;
+    this.height = this.#height;
     this.#drawScene();
     if (this.animating) this._animateStep();
   }
@@ -371,7 +379,7 @@ export class SDFCanvas extends HTMLElement {
     this.#figure = value;
     // TODO necessary? + await for shader_program!
     if (this.#shader_program != null) {
-      this._updateNumOfParts();
+      this.#updateNumOfParts();
       this.updateSceneRender();
     }
   }
@@ -381,7 +389,6 @@ export class SDFCanvas extends HTMLElement {
   }
   set width(value) {
     // TODO
-    this.#width = value;
     this.canvas.width = value;
     // TODO
     this.#gl.uniform1i(
@@ -399,7 +406,6 @@ export class SDFCanvas extends HTMLElement {
   }
   set height(value) {
     // TODO
-    this.#height = value;
     this.canvas.height = value;
 
     // TODO
@@ -420,7 +426,7 @@ export class SDFCanvas extends HTMLElement {
   /**
    * @brief update the shader uniform variable
    */
-  _updateNumOfParts() {
+  #updateNumOfParts() {
     const num_of_parts_loc = this.#gl.getUniformLocation(
       this.#shader_program,
       NUM_OF_PARTS_NAME,
