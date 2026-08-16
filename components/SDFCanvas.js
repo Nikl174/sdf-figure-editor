@@ -11,7 +11,7 @@ import {
 // TODO refactor
 
 /**
- * @typedef {{ camPos: number[], lightPos: number[], figure: SDFPart[], custom: Map<string,any> }} AnimVars
+ * @typedef {{ camPos: vec3, lightPos: vec3, figure: SDFPart[], custom: Map<string,any> }} AnimVars
  * Type for parameters passed to and returned by the animation callback in SDFCanvas
  * custom is used for custom states for the animation
  */
@@ -91,8 +91,8 @@ export class SDFCanvas extends HTMLElement {
    * @type {SDFPart[]} */
   static SDF_FIGURE = [];
   // initial position TODO
-  static CAM_POSITION = rotatedPos(12.0, 0, 0);
-  static LIGHT_POSITION = [-15, 10, 8];
+  static CAM_POSITION = vec3.fromValues(-5, 5, 4);
+  static LIGHT_POSITION = vec3.fromValues(-15, 10, 8);
   // interval for updating FPS view in ms
   static FPS_INTERVAL = 1000;
   // default for the canvas
@@ -260,14 +260,15 @@ export class SDFCanvas extends HTMLElement {
   }
 
   /** @brief Returns when initialisation is ready
-    */
+   */
   async whenReady() {
     await this.#readyPromise;
   }
 
   /** @brief When the element is actually attached to DOM, this starts the actual render, getting the shader files, compiling it and starting an animation
    */
-  connectedCallback() {
+  async connectedCallback() {
+    await this.#readyPromise;
     this.width = this.#width;
     this.height = this.#height;
     this.#drawScene();

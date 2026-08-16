@@ -1,7 +1,7 @@
 import {
-  computeCameraPosition,
   mat3Rotation,
   rotatedPos,
+  sphericalToCatesianCoordinates,
 } from "./lib/utils.js";
 import { SDFCanvas } from "./components/SDFCanvas.js";
 import { SDFEditor } from "./components/FigureEditor.js";
@@ -54,18 +54,21 @@ function animate(animVars) {
     animVars.custom.set("camRotRad", 0);
     camRotRad = 0;
   }
-  // if (dragging) {
-  // TODO
-  animVars.camPos = computeCameraPosition(
-    [0, 0, 0],
-    radius,
-    phi,
-    theta,
+  animVars.camPos = sphericalToCatesianCoordinates({
+    radius: radius,
+    phi: phi,
+    theta: theta,
+  });
+  // switch y and z axis because of rotated coordinate system
+  animVars.camPos = vec3.fromValues(
+    animVars.camPos[0],
+    animVars.camPos[2],
+    animVars.camPos[1],
   );
-  // } else
+
   if (rotating && !dragging) {
-    animVars.camPos = rotatedPos(radius, camRotRad, animVars.camPos[1]);
-    camRotRad += CAM_ROT_INC_RAD;
+    animVars.camPos = rotatedPos(radius, phi, animVars.camPos[1]);
+    phi += CAM_ROT_INC_RAD;
   }
 
   animVars.custom.set("camRotRad", camRotRad);
