@@ -1,11 +1,11 @@
 import {
-  mat3Rotation,
   rotatedPos,
   sphericalToCatesianCoordinates,
 } from "./lib/utils.js";
 import { SDFCanvas } from "./components/SDFCanvas.js";
 import { SDFEditor } from "./components/FigureEditor.js";
 import { FigureNodeEditor } from "./components/FigureNodeEditor.js";
+import { FigureTree } from "./components/FigureTree.js";
 import { SDF_PRIMITIES, SDFPart } from "./lib/figure.js";
 import { FigureNode } from "./lib/figureGraph.js";
 import { mat3, vec3 } from "./lib/matrix.js";
@@ -31,7 +31,6 @@ let dragging = false;
 let rotating = false;
 
 const fig_pos = vec3.fromValues(0, 0, 0);
-// const identity = mat3.create();
 // deno-fmt-ignore
 const identity = mat3.fromValues(
       1, 0, 0,
@@ -41,8 +40,7 @@ const identity = mat3.fromValues(
 
 /** @typedef {[{name: string, node: FigureNode}]} ComponentList */
 /** @type {ComponentList} */
-const fig_component_list = [];
-let current_figure_id = 0;
+let current_figure_id = null;
 
 let figure = new FigureNode();
 /**
@@ -59,6 +57,7 @@ function animate(animVars) {
     phi: phi,
     theta: theta,
   });
+
   // switch y and z axis because of rotated coordinate system
   animVars.camPos = vec3.fromValues(
     animVars.camPos[0],
@@ -83,7 +82,7 @@ function createFigure() {
   const shirt = vec3.fromValues(0.2, 0.2, 0.25);
   const pants = vec3.fromValues(0.1, 0.1, 0.5);
 
-  const body = FigureNode.create({
+  const body = FigureNode.create("body", {
     radius: 1.2,
     phi: 0,
     theta: 0,
@@ -93,7 +92,7 @@ function createFigure() {
     color: shirt,
     extra_param: [0.29, 0.0, 0.0],
   });
-  const pelvis = FigureNode.create({
+  const pelvis = FigureNode.create("pelvis", {
     radius: 0.2,
     phi: 0,
     theta: 0,
@@ -103,7 +102,7 @@ function createFigure() {
     color: pants,
     extra_param: [0.3, 0.0, 0.0],
   });
-  const head = FigureNode.create({
+  const head = FigureNode.create("head", {
     radius: 0.35,
     phi: 0,
     theta: 0,
@@ -113,7 +112,7 @@ function createFigure() {
     color: skin,
     extra_param: [0.37, 0.0, 0.0],
   });
-  const upperArm_right = FigureNode.create({
+  const upperArm_right = FigureNode.create("upperArm_right", {
     radius: 0.8,
     phi: 0,
     theta: Math.PI / 2,
@@ -123,7 +122,7 @@ function createFigure() {
     color: shirt,
     extra_param: [0.23, 0.0, 0.0],
   });
-  const upperArm_left = FigureNode.create({
+  const upperArm_left = FigureNode.create("upperArm_left", {
     radius: 0.8,
     phi: 0,
     theta: -Math.PI / 2,
@@ -133,7 +132,7 @@ function createFigure() {
     color: shirt,
     extra_param: [0.23, 0.0, 0.0],
   });
-  const lowerArm_right = FigureNode.create({
+  const lowerArm_right = FigureNode.create("lowerArm_right", {
     radius: 1.0,
     phi: 0,
     theta: 0,
@@ -143,7 +142,7 @@ function createFigure() {
     color: skin,
     extra_param: [0.20, 0.0, 0.0],
   });
-  const lowerArm_left = FigureNode.create({
+  const lowerArm_left = FigureNode.create("lowerArm_left", {
     radius: 1.0,
     phi: 0,
     theta: 0,
@@ -153,7 +152,7 @@ function createFigure() {
     color: skin,
     extra_param: [0.20, 0.0, 0.0],
   });
-  const upperLeg_right = FigureNode.create({
+  const upperLeg_right = FigureNode.create("upperLeg_right", {
     radius: 1.0,
     phi: 0,
     theta: Math.PI / 8,
@@ -163,7 +162,7 @@ function createFigure() {
     color: pants,
     extra_param: [0.28, 0.0, 0.0],
   });
-  const upperLeg_left = FigureNode.create({
+  const upperLeg_left = FigureNode.create("upperLeg_left", {
     radius: 1.0,
     phi: 0,
     theta: -Math.PI / 8,
@@ -173,7 +172,7 @@ function createFigure() {
     color: pants,
     extra_param: [0.28, 0.0, 0.0],
   });
-  const lowerLeg_right = FigureNode.create({
+  const lowerLeg_right = FigureNode.create("lowerLeg_right", {
     radius: 1.2,
     phi: 0,
     theta: 0,
@@ -183,7 +182,7 @@ function createFigure() {
     color: pants,
     extra_param: [0.25, 0.0, 0.0],
   });
-  const lowerLeg_left = FigureNode.create({
+  const lowerLeg_left = FigureNode.create("lowerLeg_left", {
     radius: 1.2,
     phi: 0,
     theta: 0,
@@ -194,17 +193,6 @@ function createFigure() {
     extra_param: [0.25, 0.0, 0.0],
   });
 
-  fig_component_list.push({ name: "body", node: body });
-  fig_component_list.push({ name: "pelvis", node: pelvis });
-  fig_component_list.push({ name: "head", node: head });
-  fig_component_list.push({ name: "upperArm_right", node: upperArm_right });
-  fig_component_list.push({ name: "lowerArm_right", node: lowerArm_right });
-  fig_component_list.push({ name: "upperArm_left", node: upperArm_left });
-  fig_component_list.push({ name: "lowerArm_left", node: lowerArm_left });
-  fig_component_list.push({ name: "upperLeg_right", node: upperLeg_right });
-  fig_component_list.push({ name: "lowerLeg_right", node: lowerLeg_right });
-  fig_component_list.push({ name: "upperLeg_left", node: upperLeg_left });
-  fig_component_list.push({ name: "lowerLeg_left", node: lowerLeg_left });
   body.addChild(head, 1.5);
   body.addChild(pelvis, 0);
   body.addChild(upperArm_left, 1);
@@ -245,12 +233,15 @@ function convertFigureListToSDFPart(list) {
 
 /** @brief update the visual values inside of the editor
  * @param {FigureNodeEditor} editor the node editor
- * @param {ComponentList} nodes the list of nodes from which one is selected
- * @param {Number} index index of the selected node
+ * @param {FigureNode} root root node of the figure
+ * * @param {Number} name name of the new node
  */
-function updateNodeEditor(editor, nodes, index) {
-  editor.setSelection(index, nodes.length, nodes[index].name);
-  editor.setValues(nodes[index].node.vector);
+function updateNodeEditor(editor, root, name) {
+  const node = root.findNodeByName(name);
+  console.log(name, node, root);
+  editor.setSelection(name);
+  editor.setValues(node.vector, node.param.color, node.param.sdf);
+  // TODO color
 }
 
 async function main() {
@@ -258,6 +249,7 @@ async function main() {
     /** @type {SDFCanvas|null} */ (document.getElementById("sdf-view"));
   const editor =
     /** @type {SDFEditor|null} */ (document.getElementById("sdf-editor"));
+  figure = createFigure();
 
   if (!canvas || !editor) {
     throw new Error("Canvas or editor not found in document!");
@@ -304,7 +296,7 @@ async function main() {
     if (!dragging) return;
 
     theta += -e.movementY * 0.01;
-    phi += -e.movementX * 0.01; // Clamp phi to avoid flipping
+    phi += e.movementX * 0.01; // Clamp phi to avoid flipping
     canvas.updateSceneRender();
   });
   // ---------
@@ -318,15 +310,42 @@ async function main() {
   const animate_box = /** @type {HTMLInputElement|null}*/ (document
     .getElementById("animate"));
   canvas.animating = animate_box.checked;
-  const edit_figure_box = /** @type {HTMLInputElement|null}*/ (document
-    .getElementById("edit"));
   const resolution_width_box = /** @type {HTMLInputElement|null}*/ (document
     .getElementById("width"));
   const resolution_height_box = /** @type {HTMLInputElement|null}*/ (document
     .getElementById("height"));
+  const edit_figure_box = /** @type {HTMLInputElement|null}*/ (document
+    .getElementById("edit"));
   const node_editor = /** @type {FigureNodeEditor|null}*/ (document
     .getElementById("node-editor"));
-  node_editor.style.display = edit_figure_box.checked ? "block" : "none";
+  const node_tree = /** @type {FigureTree|null}*/ (document
+    .getElementById("node-tree"));
+  node_editor.style.display =
+    edit_figure_box.checked && current_figure_id !== null ? "block" : "none";
+  node_tree.style.display = edit_figure_box.checked ? "block" : "none";
+
+  const config = {
+    nameKey: "name",
+    childrenKey: "childs",
+    typeKey: "type",
+  };
+  const sdf_options = [
+    { label: "None", value: -1 },
+    { label: "Sphere", value: 0 },
+    { label: "Capsule", value: 1 },
+    { label: "Bend Capsule", value: 2 },
+    { label: "Round Cone", value: 3 },
+    { label: "Ellipsoid", value: 4 },
+  ];
+  node_editor.sdfOptions = sdf_options;
+  node_tree.style.display = edit_figure_box.checked ? "block" : "none";
+  node_tree.config = config;
+
+  node_tree?.addEventListener("select", (event) => {
+    node_editor.setSelection(event.detail);
+    updateNodeEditor(node_editor, figure, event.detail);
+    current_figure_id = event.detail;
+  });
 
   canvas.height = resolution_height_box.valueAsNumber;
   canvas.width = resolution_width_box.valueAsNumber;
@@ -345,26 +364,32 @@ async function main() {
     rotating = event.target.checked;
   });
   edit_figure_box.addEventListener("change", (event) => {
-    node_editor.style.display = event.target.checked ? "block" : "none";
+    node_editor.style.display =
+      event.target.checked && current_figure_id !== null ? "block" : "none";
+    node_tree.style.display = event.target.checked ? "block" : "none";
   });
 
-  node_editor.addEventListener("previous-item", () => {
-    if (current_figure_id > 0) {
-      current_figure_id--;
-      updateNodeEditor(node_editor, fig_component_list, current_figure_id);
-    }
-  });
-  node_editor.addEventListener("next-item", () => {
-    if (current_figure_id < fig_component_list.length) {
-      current_figure_id++;
-      updateNodeEditor(node_editor, fig_component_list, current_figure_id);
-    }
-  });
   node_editor.addEventListener("value-change", (event) => {
-    const node = fig_component_list[current_figure_id].node;
-    const vec = node.vector;
-    vec[event.detail.property] = event.detail.value;
-    node.vector = vec;
+    const node = figure.findNodeByName(current_figure_id);
+    if (node === null) return;
+    switch (event.detail.property) {
+      case "color":
+        node.param.color = event.detail.value;
+        break;
+      case "theta":
+      case "radius":
+      case "phi": {
+        const vec = node.vector;
+        vec[event.detail.property] = event.detail.value;
+        node.vector = vec;
+        break;
+      }
+      case "sdf":
+        node.param.sdf = event.detail.value;
+        break;
+      default:
+        console.warn("property not defined!", event.detail.property);
+    }
 
     const figure_list = figure.transformToList(fig_pos, identity);
     canvas.figure = convertFigureListToSDFPart(figure_list);
@@ -374,11 +399,12 @@ async function main() {
 
   // figure handling
   // ---------
-  figure = createFigure();
   const figure_list = figure.transformToList(fig_pos, identity);
   canvas.figure = convertFigureListToSDFPart(figure_list);
   editor.figureText = JSON.stringify(figure);
-
+  console.log("Figure: ", editor.figureText);
+  node_tree.figure = JSON.parse(editor.figureText);
+  // updateNodeEditor(node_editor, figure, current_figure_id);
   SDFEditor.onFigureEvent(editor, (event) => {
     const figure_json = JSON.parse(event.detail.figureJson);
     const fig = FigureNode.fromJSON(figure_json);
@@ -386,7 +412,7 @@ async function main() {
     console.log(fig_list);
 
     canvas.figure = convertFigureListToSDFPart(fig_list);
-    updateNodeEditor(node_editor, fig_component_list, current_figure_id);
+    updateNodeEditor(node_editor, figure, current_figure_id);
   });
   // ---------
 }

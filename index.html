@@ -106,8 +106,9 @@
       flex-shrink: 0;
       background: var(--bg-panel);
       border-left: 1px solid var(--border);
+      font-family: var(--font-mono);
+      color: var(--text-main);
       padding: 1rem;
-      overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 1rem;
@@ -117,7 +118,7 @@
     fieldset {
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1rem;
+      padding: 0.75rem;
       margin: 0;
     }
 
@@ -151,7 +152,7 @@
       border-radius: 4px;
       font-family: var(--font-mono);
       font-size: 0.85em;
-      text-align: right;
+      text-align: left;
     }
 
     .value-input:focus {
@@ -256,6 +257,18 @@
       transform: scale(0.97);
     }
 
+    #figure-edit {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      vertical-align: stretch;
+    }
+
+    figure-tree {
+      align-items: stretch;
+      vertical-align: stretch;
+    }
+
     /* Responsive Design */
     @media (max-width: 1000px) {
       body {
@@ -279,6 +292,17 @@
         border-right: none;
         border-left: none;
         border-top: 1px solid var(--border);
+      }
+
+      #figure-edit {
+        display: flex;
+        align-items: stretch;
+        flex-direction: row;
+        gap: 0.5em;
+      }
+
+      figure-tree {
+        min-width: 40%;
       }
 
       sdf-editor {
@@ -376,7 +400,7 @@
         <fieldset>
           <legend>Global Settings</legend>
           <div class="checkbox-group">
-            <input class="value-input" type="number" name="width" id="width"  value="500">
+            <input class="value-input" type="number" name="width" id="width" value="500">
             x
             <input class="value-input" type="number" name="height" id="height" value="500">
             <label style="margin-left: 0.5rem">Resolution</label>
@@ -395,7 +419,11 @@
           </div>
         </fieldset>
 
-        <figure-node-editor id="node-editor"></figure-node-editor>
+        <div id="figure-edit">
+          <figure-tree id="node-tree"></figure-tree>
+          <figure-node-editor id="node-editor"></figure-node-editor>
+        </div>
+
       </div>
     </div>
   </div>
