@@ -74,30 +74,6 @@ function animate(animVars) {
   animVars.custom.set("camRotRad", camRotRad);
 }
 
-/** TODO typechecking for ANY type of parameters!!
- * @brief Convert Figure Graph List to shader list
- * @param {FigureList} list list of nodes
- * @return {SDFPart[]} SDFPart list used to give to the shader
- */
-function convertFigureListToSDFPart(list) {
-  /** @type {SDFPart[]}*/
-  const parts = [];
-  for (const node of list) {
-    // TODO WARNING typecheck!!
-    parts.push(
-      new SDFPart(
-        node.param.sdf,
-        node.start,
-        node.end,
-        node.param.color,
-        node.param.smooth_min,
-        node.param.extra_param,
-      ),
-    );
-  }
-  return parts;
-}
-
 /**
  * @brief Construct an example human figure using FigureNode structure
  * @return {FigureNode} the constructed human figure
@@ -241,6 +217,30 @@ function createFigure() {
   upperArm_right.addChild(lowerArm_right, 1);
 
   return body;
+}
+
+/** TODO typechecking for ANY type of parameters!!??
+ * @brief Convert Figure Graph List to shader list
+ * @param {FigureList} list list of nodes
+ * @return {SDFPart[]} SDFPart list used to give to the shader
+ */
+function convertFigureListToSDFPart(list) {
+  /** @type {SDFPart[]}*/
+  const parts = [];
+  for (const node of list) {
+    // TODO WARNING typecheck!!
+    parts.push(
+      new SDFPart(
+        node.param.sdf,
+        node.start,
+        node.end,
+        node.param.color,
+        node.param.smooth_min,
+        node.param.extra_param,
+      ),
+    );
+  }
+  return parts;
 }
 
 /** @brief update the visual values inside of the editor
